@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+	<!-- Use the .htaccess and remove these lines to avoid edge case issues.
+		 More info: h5bp.com/i/378 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<!-- Our site title and description -->
+	<title>Home | Ahmad Mageed - Software Ninjaneer</title>
+	<meta name="description" content="Ahmad Mageed on software engineering, .NET, C#, JavaScript, Regex and technology in general." />
+	<meta name="keywords" content="software, engineering, development, regex, C#, JavaScript, AngularJS" />
+	<meta name="author" content="Ahmad Mageed" />
+
+	<!-- Output DocPad produced meta elements -->
+	<meta name="generator" content="DocPad v6.63.3" />
+
+	<!-- Mobile viewport optimized: h5bp.com/viewport -->
+	<meta name="viewport" content="width=device-width" />
+
+	<!-- Icons -->
+		<link rel="shortcut icon" href="http://softwareninjaneer.com/images/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/icons/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="images/icons/apple-touch-icon-57-precomposed.png">
+
+	<!-- Shims: IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script async src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link  rel="stylesheet" href="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/css/bootstrap.min.css" /><link  rel="stylesheet" href="http://softwareninjaneer.com/styles/style.css" />
+</head>
+<body>
+	<!-- Menu -->
+	<div class="navbar navbar-inverse navbar-static-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="http://softwareninjaneer.com/"><img src="http://softwareninjaneer.com/images/snlogo.png"></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/blog"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/blog" property="dc:title">
+								Blog Posts
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/regextra"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/regextra" property="dc:title">
+								Regextra Project
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/pages/about"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/pages/about" property="dc:title">
+								About Ahmad
+							</a>
+						</li>
+					
+				</ul>
+			</div><!--/.navbar-collapse -->
+		</div>
+	</div>
+
+	<!-- Content -->
+	<div class="container">
+		<!-- Content -->
+		<section id="content" class="content">
+			
+
+
+    
+
+    <article class="post">
+        <h1><a href="http://softwareninjaneer.com/blog/net-number-validation-and-when-unicode-attacks">.NET gotcha: number validation and when unicode attacks!</a></h1>
+        <div class="post-date">Friday, March 28, 2014</div>
+        <div class="post-content">
+            <p>Imagine you&#39;re working with .NET and have some numeric input with a specific format that you need to validate and convert the number portion to do something interesting with. You decide to tackle this using regular expressions. </p>
+<p>You get to work, quickly constructing a pattern using the <code>\d</code> metacharacter to match digits, then use <code>int.Parse</code> on the match. Everything checks out, your unit tests pass, and you deploy your app. You&#39;re a regex ninja!</p>
+<p>Fast forward and you start noticing errors being logged around your regex. Specifically, exceptions are being thrown on the <code>int.Parse</code> portion. Surprised, you think, &quot;What?! That&#39;s impossible! The regex is solid. It matches numbers, so how could <code>int.Parse</code> possibly fail?&quot;</p>
+<p>Well, the hint is in this post&#39;s title. Consider this snippet:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"42"</span>;
+<span class="hljs-keyword">string</span> pattern = <span class="hljs-string">@"^\d+$"</span>;
+Match m = Regex.Match(input, pattern);
+<span class="hljs-keyword">if</span> (m.Success) 
+{
+    <span class="hljs-keyword">int</span> num;
+    <span class="hljs-keyword">bool</span> result = <span class="hljs-keyword">int</span>.TryParse(m.Value, <span class="hljs-keyword">out</span> num);
+    Console.WriteLine(<span class="hljs-string">"Matched number: {0} -- Parsed: {1}"</span>, input, result);
+}
+<span class="hljs-keyword">else</span>
+{
+    Console.WriteLine(<span class="hljs-string">"Invalid number: {0}"</span>, input);
+}
+
+<span class="hljs-comment">// Matched number: 42 -- Parsed: True</span>
+</code></pre>
+<p>Simple, right? To get this to fail let&#39;s pass in some Arabic numbers:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"\x0664\x0662"</span>; <span class="hljs-comment">// Arabic #42: ٤٢</span>
+
+<span class="hljs-comment">// Matched number: ٤٢ -- Parsed: False</span>
+</code></pre>
+<p>Notice that the output indicates that the Arabic numbers were valid. The regex matches but <code>int.TryParse</code> fails. In the scenario I described earlier we used <code>int.Parse</code>, confident that we would have a valid number, but in this example <code>int.Parse</code> will throw a <code>FormatException</code>.</p>
+<p>The reason is <code>\d</code> matches more than just 0-9. According <a href="http://msdn.microsoft.com/en-us/library/20bw873z%28v=vs.110%29.aspx" title="Character Classes in Regular Expressions">to MSDN</a> (emphasis mine):</p>
+<blockquote>
+<p><code>\d</code> matches any decimal digit. It is equivalent to the <code>\p{Nd}</code> regular expression pattern, which includes the standard decimal digits 0-9 as well <strong>as the decimal digits of a number of other character sets</strong>.</p>
+</blockquote>
+<p>If you normally validate numbers using <code>^\d+$</code> it clearly isn&#39;t enough. There are two ways around this, to limit the valid digits to 0-9:</p>
+<ol>
+<li>Use <code>[0-9]</code> instead. It is explicit and will not accept unicode decimal digits.</li>
+<li>Continue using <code>\d</code> and add <code>RegexOptions.ECMAScript</code> to use ECMAScript-compliant behavior. This option makes <code>\d</code> equivalent to <code>[0-9]</code>.</li>
+</ol>
+<p>An updated snippet with the ECMAScript option follows:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"\x0664\x0662"</span>;
+<span class="hljs-keyword">string</span> pattern = <span class="hljs-string">@"^\d+$"</span>;
+Match m = Regex.Match(input, pattern, RegexOptions.ECMAScript);
+<span class="hljs-comment">// ... same code as before ...</span>
+
+<span class="hljs-comment">// Invalid number: ٤٢</span>
+</code></pre>
+<p>Note, there are similar issues when using <code>\w</code> where it isn&#39;t limited to ASCII characters. Refer to <a href="http://msdn.microsoft.com/en-us/library/yd1hzczs%28v=vs.110%29.aspx#ECMAScript">ECMAScript Matching Behavior</a>. In addition, the same issue applies to <code>Char.IsDigit</code> and <code>Char.IsLetter</code>.</p>
+<p>To demonstrate:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"\x0664\x0662"</span>;
+Console.WriteLine(Char.IsDigit(input[<span class="hljs-number">0</span>])); <span class="hljs-comment">// True</span>
+</code></pre>
+<p>Next time you reach for <code>\d</code>, keep these issues in mind! Typically someone will opt for <code>\d</code> thinking it&#39;s shorter while being unaware of these implications.</p>
+
+        </div>
+    </article>
+    <hr />
+
+    
+
+    <article class="post">
+        <h1><a href="http://softwareninjaneer.com/blog/introducing-regextra">Regextra: helping you reduce your (problems){2}</a></h1>
+        <div class="post-date">Monday, March 10, 2014</div>
+        <div class="post-content">
+            <p>I&#39;m a fan of regular expressions and tend to be the go-to guy on teams when it comes to (concoct|conjur)ing patterns. I&#39;ve also <a href="http://stackoverflow.com/search?tab=votes&amp;q=regex%20user%3a59111">answered a good amount of regex related questions</a> on StackOverflow.</p>
+<p>One of the questions that frequently gets asked is how to construct a pattern that enforces passphrase/password validation with a number of criteria. These are the rules you typically see when signing up on the majority of websites: <em>your password must include at least 1 uppercase letter, 1 lowercase letter, 1 digit, 3 oz. Unicorn tears, and 16 scruples of Fluxweed...</em> you get the idea.</p>
+<p>Other questions revealed a host of handy techniques that I wanted to capture, such as <a href="http://stackoverflow.com/a/2485044/59111">splitting strings and including the delimiters</a>, trimming whitespace, and formatting camel case values.</p>
+<h2 id="enter-regextra">Enter Regextra</h2>
+<p>A little over a year ago I started working on a library to address these problems and capture useful solutions. I&#39;ve been working on it on and off and recently devoted much more time to it to add some finishing touches before releasing it on NuGet. Without further ado, I&#39;m finally happy to reveal it!</p>
+<p><a href="https://github.com/amageed/Regextra">Regextra</a> (pronounced &quot;Rej-extra&quot;) is an open-source .NET library written in C#. It&#39;s well tested, with over 200 unit tests.</p>
+<p>Currently, the library includes the following features:</p>
+<ul>
+<li>Passphrase Regex Builder</li>
+<li>Named Template Formatting</li>
+<li>Useful regex/string methods</li>
+</ul>
+<p>Over time I hope to add other useful features, and would love to hear any community feedback on what the library accomplishes today. The goal of this project was to address common scenarios, however that&#39;s not to be confused with amassing all sorts of patterns. This is more of a helpful utility, not an encyclopedia of patterns.</p>
+<h2 id="getting-started">Getting Started</h2>
+<ul>
+<li>Check out the <a href="https://github.com/amageed/Regextra/wiki">wiki</a></li>
+<li>Visit the project&#39;s <a href="http://softwareninjaneer.com/regextra">demo site</a> for a chance to try out some client-side validation (using the patterns produced by the <code>PassphraseRegex</code> builder)</li>
+<li>The extensive <a href="https://github.com/amageed/Regextra/tree/master/src/Tests">test suite</a> is worth a glance</li>
+</ul>
+<p>Regextra is available via <a href="https://www.nuget.org/packages/Regextra/">NuGet</a>:</p>
+<pre class="hljs"><code class="mathematica">PM&gt; <span class="hljs-keyword">Install</span>-Package Regextra
+</code></pre><h2 id="passphrase-regex-builder">Passphrase Regex Builder</h2>
+<p>A common question I&#39;ve seen on StackOverflow is how to write code that enforces strong passphrase or password rules. Popular responses tend to tackle the problem by using a regex with look-aheads. I&#39;ve seen this so much that I decided to have fun writing a solution that allowed people to produce regex patterns that would enforce such rules.</p>
+<h3 id="example-usage">Example usage</h3>
+<p>The following code generates a pattern to enforce a password of 8-25 characters that requires at least two lowercase letters in the range of <code>a-z</code> and numbers excluding those in the range of <code>0-4</code> (i.e., numbers in the <code>5-9</code> range are acceptable).</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> builder = PassphraseRegex.With.MinLength(<span class="hljs-number">8</span>)
+                                  .MaxLength(<span class="hljs-number">25</span>)
+                                  .IncludesRange(<span class="hljs-string">'a'</span>, <span class="hljs-string">'z'</span>)
+                                  .WithMinimumOccurrenceOf(<span class="hljs-number">2</span>)
+                                  .ExcludesRange(<span class="hljs-number">0</span>, <span class="hljs-number">4</span>);
+
+PassphraseRegexResult result = builder.ToRegex();
+
+<span class="hljs-keyword">if</span> (result.IsValid)
+{
+    <span class="hljs-keyword">if</span> (result.Regex.IsMatch(input))
+    {
+        <span class="hljs-comment">// passphrase meets requirements</span>
+    }
+    <span class="hljs-keyword">else</span>
+    {
+        <span class="hljs-comment">// passphrase is no good</span>
+    }
+}
+<span class="hljs-keyword">else</span>
+{
+    <span class="hljs-comment">// check the regex parse exception message for the generated pattern</span>
+    Console.WriteLine(result.Error);
+}
+</code></pre>
+<p>Refer to the <a href="https://github.com/amageed/Regextra/wiki/PassphraseRegex:-building-passphrase-validation-patterns">PassphraseRegex wiki</a> for further details and examples.</p>
+<h2 id="template-formatting">Template Formatting</h2>
+<p>Template formatting allows you to perform named formatting on a string template using an object&#39;s matching properties. It&#39;s available via the static <code>Template.Format</code> method and the string extension method, <code>FormatTemplate</code>. The formatter features:</p>
+<ul>
+<li>Nested properties formatting</li>
+<li>Dictionary formatting</li>
+<li>Standard/Custom string formatting</li>
+<li>Escaping of properties</li>
+<li>Detailed exception messages to pinpoint missing properties</li>
+<li>Great performance (in part thanks to <a href="http://code.google.com/p/fast-member/">FastMember</a>)</li>
+</ul>
+<h3 id="example-usage">Example usage</h3>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> order = <span class="hljs-keyword">new</span>
+{
+    Description = <span class="hljs-string">"Widget"</span>,
+    OrderDate = DateTime.Now,
+    Details = <span class="hljs-keyword">new</span>
+    {
+        UnitPrice = <span class="hljs-number">1500</span>
+    }
+};
+
+<span class="hljs-keyword">string</span> template = <span class="hljs-string">"We just shipped your order of '{Description}', placed on {OrderDate:d}. Your {{credit}} card will be billed {Details.UnitPrice:C}."</span>;
+
+<span class="hljs-keyword">string</span> result = Template.Format(template, order);
+<span class="hljs-comment">// or use the extension: template.FormatTemplate(order);</span>
+</code></pre>
+<p>The result of the code is:</p>
+<blockquote>
+<p>We just shipped your order of &#39;Widget&#39;, placed on 2/28/2014. Your {credit} card will be billed $1,500.00.</p>
+</blockquote>
+<p>Refer to the <a href="https://github.com/amageed/Regextra/wiki/Template:-named-formatting">Template wiki</a> for further details and examples.</p>
+<h2 id="regexutility-class">RegexUtility Class</h2>
+<p>This static class features a couple of helpful methods, such as:</p>
+<ul>
+<li><p><strong>Split Methods</strong></p>
+<ul>
+<li><code>Split</code></li>
+<li><code>SplitRemoveEmptyEntries</code></li>
+<li><code>SplitIncludeDelimiters</code></li>
+<li><code>SplitMatchWholeWords</code></li>
+<li><code>SplitTrimWhitespace</code></li>
+</ul>
+</li>
+<li><p><strong>Formatting Methods</strong></p>
+<ul>
+<li><code>TrimWhitespace</code></li>
+<li><code>FormatCamelCase</code></li>
+</ul>
+</li>
+<li><p><strong>Named Groups Conversion Methods</strong></p>
+<ul>
+<li><code>MatchesToNamedGroupsDictionaries</code></li>
+<li><code>MatchesToNamedGroupsLookup</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="split-and-include-delimiters">Split and Include Delimiters</h3>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"123xx456yy789"</span>;
+<span class="hljs-keyword">string</span>[] delimiters = { <span class="hljs-string">"xx"</span>, <span class="hljs-string">"yy"</span> };
+<span class="hljs-keyword">var</span> result = RegexUtility.SplitIncludeDelimiters(input, delimiters);
+<span class="hljs-comment">// { "123", "xx", "456", "yy", "789" }</span>
+</code></pre>
+<h3 id="combining-split-options">Combining Split Options</h3>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"StackOverflow Stack OverStack"</span>;
+<span class="hljs-keyword">string</span>[] delimiters = { <span class="hljs-string">"Stack"</span> };
+<span class="hljs-keyword">var</span> splitOptions = SplitOptions.TrimWhitespace | SplitOptions.RemoveEmptyEntries;
+<span class="hljs-keyword">var</span> result = RegexUtility.Split(input, delimiters, splitOptions: splitOptions);
+<span class="hljs-comment">// { "Overflow", "Over" }</span>
+</code></pre>
+<h3 id="trimming-whitespace">Trimming Whitespace</h3>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> result = RegexUtility.TrimWhitespace(<span class="hljs-string">"   Hello    World   "</span>);
+<span class="hljs-comment">// "Hello World"</span>
+</code></pre>
+<h3 id="formatcamelcase">FormatCamelCase</h3>
+<p>Formats PascalCase (upper CamelCase) and (lower) camelCase words to a friendly format separated by the given delimiter (space by default).</p>
+<p>It properly handles acronyms too. For example &quot;XML&quot; is properly preserved when given an input of <code>&quot;PickUpXMLInFiveDays&quot;</code>. The result is <code>&quot;Pick Up XML In Five Days&quot;</code>.</p>
+<pre class="hljs"><code class="cs">RegexUtility.FormatCamelCase(<span class="hljs-string">"PascalCase"</span>)        <span class="hljs-comment">// Pascal Case</span>
+RegexUtility.FormatCamelCase(<span class="hljs-string">"camelCase42"</span>, <span class="hljs-string">"_"</span>)  <span class="hljs-comment">// camel_Case_42</span>
+</code></pre>
+<h3 id="matches-to-named-groups-dictionaries">Matches To Named Groups Dictionaries</h3>
+<p>Returns an array of <code>Dictionary&lt;string, string&gt;</code> of each match with the named groups as the keys, and the group&#39;s corresponding value.</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> input = <span class="hljs-string">"123-456-7890 hello 098-765-4321"</span>;
+<span class="hljs-keyword">var</span> pattern = <span class="hljs-string">@"(?&lt;AreaCode&gt;\d{3})-(?&lt;First&gt;\d{3})-(?&lt;Last&gt;\d{4})"</span>;
+<span class="hljs-keyword">var</span> results = RegexUtility.MatchesToNamedGroupsDictionaries(input, pattern);
+</code></pre>
+<p>This code returns the following result:</p>
+<p><img src="http://i.imgur.com/hnHpjHL.png" alt="Named Groups Dictionaries"></p>
+<p>Refer to the <a href="https://github.com/amageed/Regextra/wiki/RegexUtility:-miscellaneous-string-manipulation-and-regex-operations">RegexUtility wiki</a> for further details and examples.</p>
+<h2 id="check-it-out-feedback-welcome">Check it out, Feedback Welcome</h2>
+<p>Regextra&#39;s <a href="https://github.com/amageed/Regextra">source is on GitHub</a>, and you can grab it from <a href="https://www.nuget.org/packages/Regextra/">NuGet</a>.</p>
+<p>Please try it out and let me know what you think. Feedback is welcome, so feel free to leave comments or <a href="https://github.com/amageed/Regextra/issues">open issues</a>.</p>
+
+        </div>
+    </article>
+    <hr />
+
+    
+
+    <article class="post">
+        <h1><a href="http://softwareninjaneer.com/blog/creating-an-angularjs-reset-field-directive">Creating an AngularJS reset field directive</a></h1>
+        <div class="post-date">Tuesday, January 21, 2014</div>
+        <div class="post-content">
+            <p>Do you know those helpful little <code>X</code> icons that appear in form fields as you&#39;re typing? The ones that you click on to clear the entire text entry? I decided to build an AngularJS directive called <code>resetField</code> to do just that, with the additional goal of clearing the underlying <code>ngModel</code>.</p>
+<p>If you&#39;re eager to grab the code or check out the demo, here you go:</p>
+<ul>
+<li>Code: <a href="https://github.com/amageed/angular-resetfield">GitHub repo</a></li>
+<li>Demo: <a href="http://jsbin.com/OgogiwEV/22/edit?html,css,js,output">JSBin demo</a></li>
+</ul>
+<p>Some browsers include this feature out of the box. IE10+ does for text related input elements, and WebKit browsers might add icons for input types of search. You could write a directive that detects the native support and keeps it (by returning and doing nothing), as in the case of IE10+, or opt to apply your directive to all browsers and disable any native functionality. I opted for the latter since it keeps the look and feel consistent across browsers. Either way, you would have to write code to detect the feature, or CSS to disable it.</p>
+<p>The following list covers my desired behavior for this feature:</p>
+<ul>
+<li>Limited to input elements with types that make sense to reset (mainly text fields that get no special browser control appearance)</li>
+<li>Limited to elements using <code>ngModel</code></li>
+<li>Hide the built in clear field icon for IE10+ that&#39;s applied to input elements</li>
+<li>Hide the built in WebKit search cancel icon that&#39;s applied when <code>type=&quot;search&quot;</code> is used</li>
+<li>Icon appears inside the textbox</li>
+<li>Icon visibility is dependent on the input&#39;s content (hidden when empty, otherwise visible)</li>
+<li>Icon appears when the input gains focus and it isn&#39;t empty</li>
+<li>Icon disappears when the input field loses focus</li>
+<li>Add some CSS3 Animations with <code>ngAnimate</code></li>
+</ul>
+<p>To get an idea of how this would look I began with an input field, followed by a <a href="http://fontawesome.io/">Font Awesome</a> icon. I added CSS to right-align the icon and gave the field some padding so text wouldn&#39;t clash with the icon. Handling the built-in WebKit and IE10+ icons was a matter of disabling the appropriate styles by using the relevant CSS pseudo-classes on our selectors. This CSS covers most of the style related items on my list, except for animations (I&#39;ll get to that later).</p>
+<pre class="hljs"><code class="css"><span class="hljs-comment">/* prevent text from appearing underneath the icon */</span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">padding-right</span>:<span class="hljs-value"> <span class="hljs-number">19</span>px</span></span>;
+<span class="hljs-rule">}</span></span>
+
+<span class="hljs-comment">/* hide the built-in IE10+ clear field icon */</span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span><span class="hljs-pseudo">::-ms-clear</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> none</span></span>;
+<span class="hljs-rule">}</span></span>
+
+<span class="hljs-comment">/* hide cancel icon for search type */</span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span><span class="hljs-pseudo">::-webkit-search-cancel-button</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">-webkit-appearance</span>:<span class="hljs-value"> none</span></span>;
+<span class="hljs-rule">}</span></span>
+
+<span class="hljs-comment">/* icon styles */</span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span> + <span class="hljs-class">.fa</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">position</span>:<span class="hljs-value"> relative</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">right</span>:<span class="hljs-value"> <span class="hljs-number">19</span>px</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">color</span>:<span class="hljs-value"> <span class="hljs-hexcolor">#C0C0C0</span></span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">cursor</span>:<span class="hljs-value"> default</span></span>;
+<span class="hljs-rule">}</span></span>
+</code></pre>
+<pre class="hljs"><code class="xml"><span class="hljs-comment">&lt;!-- head content --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">"stylesheet"</span>&gt;</span>
+
+<span class="hljs-comment">&lt;!-- body content --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text"</span> <span class="hljs-attribute">reset-field</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">input</span>&gt;</span>
+<span class="hljs-comment">&lt;!-- the icon will be added by the directive and is shown here for clarity --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">i</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"fa fa-times-circle"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">i</span>&gt;</span>
+</code></pre>
+<p>That should yield something similar to this: <img src="http://softwareninjaneer.com/images/ResetFieldExample.png" alt="Reset field icon appearance"></p>
+<p>The idea is for an input element to use the <code>reset-field</code> directive, which will add the icon next to the element automatically. Next, I needed a way to toggle the icon&#39;s visibility. I also wanted the icon to be clickable to trigger the reset. With these two issues in mind, I added some directives to the icon&#39;s markup:</p>
+<pre class="hljs"><code class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">i</span> <span class="hljs-attribute">ng-show</span>=<span class="hljs-value">"enabled"</span> <span class="hljs-attribute">ng-mousedown</span>=<span class="hljs-value">"reset()"</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"fa fa-times-circle"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">i</span>&gt;</span>
+</code></pre>
+<p>Notice something odd? I&#39;m using <code>ng-mousedown</code> instead of <code>ng-click</code>. The latter worked for me originally, but eventually I added a <code>blur</code> binding on the input element, and that interfered with clicking on the icon (the icon&#39;s visibility would be toggled without affecting the content). Since the <code>mousedown</code> event gets fired prior to the <code>blur</code> event, using <code>ng-mousedown</code> resolves the issue.</p>
+<p>By updating <code>scope.enabled</code> I can toggle the icon&#39;s visibility. The <code>scope.reset()</code> function will handle the reset whenever the icon is clicked. The icon markup uses typical Angular directives, but on its own it&#39;s just markup. To get it to function as expected it needs to be compiled and given a scope. To achieve this I use the <a href="http://docs.angularjs.org/api/ng.$compile"><code>$compile</code> service</a>, which returns a linker function that takes the <code>scope</code> available from the directive&#39;s link function.</p>
+<p>To illustrate how this fits into the overall directive, consider the following (incomplete) setup to get a sense of the structure thus far:</p>
+<pre class="hljs"><code class="javascript">angular.module(<span class="hljs-string">'app'</span>).directive(<span class="hljs-string">'resetField'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($compile)</span> {</span>
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-built_in">require</span>: <span class="hljs-string">'ngModel'</span>,
+    scope: {},
+    link: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(scope, element)</span> {</span>
+      <span class="hljs-comment">// compiled reset icon template</span>
+      <span class="hljs-keyword">var</span> template = $compile(<span class="hljs-string">'&lt;i ng-show="enabled" ng-mousedown="reset()" class="fa fa-times-circle"&gt;&lt;/i&gt;'</span>)(scope);
+      element.after(template);
+    }
+  };
+});
+</code></pre>
+<p>So far the directive uses an isolated scope and the link function gives us access to the scope and target element. The directive depends on <code>$compile</code>, and is limited to elements with an underlying model since it requires the <code>ngModel</code> controller. The icon markup is compiled with an isolated scope. Next, the compiled template is appended next to the target element.</p>
+<p>To limit it to input elements I will test the element&#39;s <code>nodeName</code>. To access the element though, I need to access <code>element[0]</code> to get the actual DOM element rather than the wrapped jqLite/Angular version. I also want to limit it to input types that make sense to have this icon applied to (i.e., mainly text related fields, not radio buttons, or date fields that will be rendered differently by browsers). I can achieve this by inspecting the <code>type</code> property of the element&#39;s attributes. The link function&#39;s third parameter gives me access to the attributes (<code>attrs</code> below).</p>
+<pre class="hljs"><code class="javascript">link: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(scope, element, attrs)</span> {</span>
+  <span class="hljs-comment">// limit to input element of specific types</span>
+  <span class="hljs-keyword">var</span> inputTypes = <span class="hljs-regexp">/text|search|tel|url|email|password/i</span>;
+  <span class="hljs-keyword">if</span> (el[<span class="hljs-number">0</span>].nodeName !== <span class="hljs-string">"INPUT"</span>)
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"resetField is limited to input elements"</span>);
+  <span class="hljs-keyword">if</span> (!inputTypes.test(attrs.type))
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Invalid input type for resetField: "</span> + attrs.type);
+</code></pre>
+<p>Next, I&#39;ll add the logic that determines when to show or hide the icon. I want to show the icon when the element has content. Binding to the element&#39;s <code>change</code> event is the easiest way to handle this. Hopefully your app targets modern browsers which support the <code>change</code> event, otherwise you might need to resort to <code>keyup</code> and <code>keydown</code> type of events which can get a little messy when you want to detect changes to handle the delete/backspace/ctrl/shift keys. The <code>change</code> event takes the hassle out of all that and works intuitively.</p>
+<p>To check whether the content is empty I could perform standard length checks on the element&#39;s value. Instead, I&#39;ve opted to use the <code>NgModelController.$isEmpty</code> function which performs a few additional checks. I&#39;ll be needing the controller anyway for the reset functionality, so it isn&#39;t being brought in solely for this purpose. The link function&#39;s fourth parameter provides access to the <code>NgModelController</code>.</p>
+<p>This gives us the following updated directive:</p>
+<pre class="hljs"><code class="javascript">link: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(scope, element, attrs, ctrl)</span> {</span>
+  <span class="hljs-comment">/* limit to input element... */</span>
+
+  <span class="hljs-comment">/* compiled reset icon template... */</span>
+
+  element.bind(<span class="hljs-string">'input'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+    scope.enabled = !ctrl.$isEmpty(element.val());
+  })
+</code></pre>
+<p>If the element gains or loses focus, I need to update the icon&#39;s visibility accordingly. I achieve this by binding to the <code>focus</code> and <code>blur</code> events. Since the focus changes don&#39;t affect the content I need force an update by calling <code>$scope.apply()</code>. In fact, Angular does just that under the covers when it handles the <code>input</code> event.</p>
+<p>With these concerns in mind, the bindings now resemble the following:</p>
+<pre class="hljs"><code class="javascript">element.bind(<span class="hljs-string">'input'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  scope.enabled = !ctrl.$isEmpty(element.val());
+})
+.bind(<span class="hljs-string">'focus'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  scope.enabled = !ctrl.$isEmpty(element.val());
+  scope.$apply();
+})
+.bind(<span class="hljs-string">'blur'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  scope.enabled = <span class="hljs-literal">false</span>;
+  scope.$apply();
+});
+</code></pre>
+<p>The next piece of the puzzle is implementing the <code>reset()</code> function that gets called whenever the icon is clicked. This is the main part of the code that I changed a few times and wonder if there&#39;s a better way to pull off. The main challenge was that resetting the value directly, via <code>element.val(null)</code>, wasn&#39;t affecting the model. In other words, the binding wouldn&#39;t kick in. Instead, I needed to use a pair of <code>NgModelController</code> functions to update the view (and model), then render the changes to the UI. Specifically, the <code>$setViewValue()</code> function updates the view&#39;s value (and ultimately the model&#39;s value), and the <code>$render()</code> function is responsible for actually updating the view (i.e., the UI gets updated).</p>
+<p>After the UI update the focus is lost, so I use the <code>$timeout</code> service to reset it. A piece of advice I received at <a href="http://ng-conf.org/">ng-conf 2014</a> was that I could get away with <code>setTimeout</code> for better performance since it wouldn&#39;t trigger a digest cycle. In other words, <code>$timeout</code> is useful if I have other changes that would benefit from triggering a digest and for testability. The good news is that according to the <a href="http://docs.angularjs.org/api/ng.$timeout"><code>$timeout</code> documentation</a> I can still use it and avoid a digest by passing in <code>false</code> to the <code>invokeApply</code> parameter.</p>
+<p>With these additions the directive resembles the following:</p>
+<pre class="hljs"><code class="javascript"><span class="hljs-comment">// add $timeout</span>
+angular.module(<span class="hljs-string">'app'</span>).directive(<span class="hljs-string">'resetField'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($compile, $timeout)</span> {</span>
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-built_in">require</span>: <span class="hljs-string">'ngModel'</span>,
+    scope: {},
+    link: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(scope, el, attrs, ctrl)</span> {</span>
+      <span class="hljs-comment">/* limit to input element... */</span>
+
+      <span class="hljs-comment">/* compiled reset icon template... */</span>
+
+      scope.reset = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+        ctrl.$setViewValue(<span class="hljs-literal">null</span>);
+        ctrl.$render();
+        $timeout(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+            el[<span class="hljs-number">0</span>].focus();
+        }, <span class="hljs-number">0</span>, <span class="hljs-literal">false</span>);
+      };
+</code></pre>
+<p>At this point I&#39;ve covered everything on my list of requirements and the final item is adding animations. I&#39;ve decided to leverage the awesome <a href="https://daneden.me/animate/">Animate.css library</a>. It provides a number of named CSS3 keyframe animations.</p>
+<p>Since the icon uses <code>ng-show</code>, the Angular animation library allows us to plugin to the animation transitions through the <code>ng-hide-*</code> classes that are added when the <code>ng-show</code> value changes. To hook into these I&#39;ll add the <code>fadeOut</code> animation (from Animate.css) to the <code>ng-hide-add</code> class, and the &#39;fadeIn&#39; animation for the <code>ng-hide-remove</code> class. For more details on Angular animations check out <a href="http://www.yearofmoo.com/2013/08/remastered-animation-in-angularjs-1-2.html">&quot;Remastered Animations in AngularJS 1.2.&quot;</a>.</p>
+<p>A minor issue I ran into with the CSS was that I had to use <code>display:inline</code> to get this to appear smoothly, rather than the <code>display:block</code> suggested by the aforementioned blog post.</p>
+<p>To include Animate.css and ngAnimate:</p>
+<pre class="hljs"><code class="xml">  <span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"//cdnjs.cloudflare.com/ajax/libs/animate.css/2.0/animate.min.css"</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">"stylesheet"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-animate.min.js"</span>&gt;</span><span class="javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+</code></pre>
+<p>The CSS needed to work with ngAnimate:</p>
+<pre class="hljs"><code class="css"><span class="hljs-comment">/* animations for ngAnimate */</span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span> + <span class="hljs-class">.fa</span><span class="hljs-class">.ng-hide-add</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value">inline<span class="hljs-important">!important</span></span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">-webkit-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.3</span>s fadeOut</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">-moz-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.3</span>s fadeOut</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">-ms-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.3</span>s fadeOut</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">animation</span>:<span class="hljs-value"> <span class="hljs-number">0.3</span>s fadeOut</span></span>;
+<span class="hljs-rule">}</span></span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span> + <span class="hljs-class">.fa</span><span class="hljs-class">.ng-hide-remove</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">-webkit-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.5</span>s fadeIn</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">-moz-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.5</span>s fadeIn</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">-ms-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.5</span>s fadeIn</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">animation</span>:<span class="hljs-value"> <span class="hljs-number">0.5</span>s fadeIn</span></span>;
+<span class="hljs-rule">}</span></span>
+</code></pre>
+<p>Next, the <code>ngAnimate</code> module needs to be included:</p>
+<pre class="hljs"><code class="javascript">angular.module(<span class="hljs-string">'app'</span>, [<span class="hljs-string">'ngAnimate'</span>])
+</code></pre>
+<p>With these pieces in place the icon now fades in when the input element has text or gains focus (when it&#39;s not empty) and fades out when the element becomes empty (while active) or loses focus.</p>
+<p>The complete directive looks like this:</p>
+<pre class="hljs"><code class="javascript">angular.module(<span class="hljs-string">'am.resetField'</span>, []).directive(<span class="hljs-string">'resetField'</span>, [<span class="hljs-string">'$compile'</span>, <span class="hljs-string">'$timeout'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($compile, $timeout)</span> {</span>
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-built_in">require</span>: <span class="hljs-string">'ngModel'</span>,
+    scope: {},
+    link: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(scope, el, attrs, ctrl)</span> {</span>
+      <span class="hljs-comment">// limit to input element of specific types</span>
+      <span class="hljs-keyword">var</span> inputTypes = <span class="hljs-regexp">/text|search|tel|url|email|password/i</span>;
+      <span class="hljs-keyword">if</span> (el[<span class="hljs-number">0</span>].nodeName !== <span class="hljs-string">"INPUT"</span>) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"resetField is limited to input elements"</span>);
+      }
+      <span class="hljs-keyword">if</span> (!inputTypes.test(attrs.type)) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Invalid input type for resetField: "</span> + attrs.type);
+      }
+
+      <span class="hljs-comment">// compiled reset icon template</span>
+      <span class="hljs-keyword">var</span> template = $compile(<span class="hljs-string">'&lt;i ng-show="enabled" ng-mousedown="reset()" class="fa fa-times-circle"&gt;&lt;/i&gt;'</span>)(scope);
+      el.after(template);
+
+      scope.reset = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+        ctrl.$setViewValue(<span class="hljs-literal">null</span>);
+        ctrl.$render();
+        $timeout(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+            el[<span class="hljs-number">0</span>].focus();
+        }, <span class="hljs-number">0</span>, <span class="hljs-literal">false</span>);
+      };
+
+      el.bind(<span class="hljs-string">'input'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+        scope.enabled = !ctrl.$isEmpty(el.val());
+      })
+      .bind(<span class="hljs-string">'focus'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+        scope.enabled = !ctrl.$isEmpty(el.val());
+        scope.$apply();
+      })
+      .bind(<span class="hljs-string">'blur'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+        scope.enabled = <span class="hljs-literal">false</span>;
+        scope.$apply();
+      });
+    }
+  };
+}]);
+</code></pre>
+<p>I spoke with Dave Smith at <a href="http://ng-conf.org/">ng-conf 2014</a>. He gave a nice &quot;Deep Dive into Custom Directives&quot; session and kindly accepted to code review my directive to see if I could make improvements. Replacing <code>$timeout</code> with <code>setTimeout</code> was one of those suggestions, which I covered earlier. One of the interesting suggestions he made was to turn this into a component instead, which would allow me to get rid of the <code>$compile</code> step and get rid of the <code>NgModelController</code> calls made in the <code>reset()</code>, perhaps by a direct <code>element.val(null)</code> call instead.</p>
+<p>The feedback was much appreciated and I might try my hand at that next. I suppose that approach might allow me to remove the input type checking as well, since the usage of the component leaves no room for ambiguity, or I can still apply the type via attributes.</p>
+<p>Be sure to check out my <a href="https://github.com/amageed/angular-resetfield">GitHub repo</a> where I have a demo setup of the directive along with a suite of Karma/Jasmine tests.</p>
+<p>If you&#39;ve got any code improvement suggestions, especially around the <code>reset</code> functionality, your feedback is welcome!</p>
+
+        </div>
+    </article>
+    <hr />
+
+    
+
+    <article class="post">
+        <h1><a href="http://softwareninjaneer.com/blog/writing-angularjs-controllers-coffeescript-classes">Writing AngularJS controllers with CoffeeScript classes</a></h1>
+        <div class="post-date">Saturday, September 07, 2013</div>
+        <div class="post-content">
+            <p>When I started using AngularJS one of the obstacles I ran into was using CoffeeScript classes to develop the controllers. Most examples show an inline JavaScript function, which I can easily duplicate with CoffeeScript. However, to make use of a CoffeeScript class, I had to play around with it till I figured it out.</p>
+<p>In this post I&#39;ll provide a look at converting the simple Todo app on the Angular page to CoffeeScript. I&#39;ll cover the process I went through while figuring this out, which includes:</p>
+<ol>
+<li>A 1:1 JavaScript to CoffeeScript conversion using functions</li>
+<li>Using a CoffeeScript class with all functions defined in the constructor, off of <code>$scope</code> (don&#39;t do this)</li>
+<li>Defining methods on the class instead of on <code>$scope</code> and assigning the class to the <code>$scope</code> (good)</li>
+<li>Using the new Angular 1.1.5+ <code>controller as</code> syntax and an example of CoffeeScript using a class and base class (good)</li>
+</ol>
+<h3 id="original-todo-app">Original Todo App</h3>
+<p>To begin with, familiarize yourself with the original Angular Todo app written in JavaScript:</p>
+<p><a class="jsbin-embed" href="http://jsbin.com/eJOVofO/1/embed?html,js,output">JS Bin</a><script src="http://static.jsbin.com/js/embed.js"></script></p>
+<h3 id="1-1-conversion-to-coffeescript">1:1 Conversion to CoffeeScript</h3>
+<p>When using CoffeeScript the output is typically generated within an anonymous function to avoid polluting the global namespace (unless you&#39;re using the <code>bare</code> compilation option). This poses a challenge when converting the example from JavaScript to CoffeeScript. When doing so, you&#39;ll likely run into this error: <em>Argument &#39;TodoCtrl&#39; is not a function, got undefined</em></p>
+<p>To address this issue:</p>
+<ol>
+<li>Add a module name for the Angular application: <code>&lt;html ng-app=&quot;todoApp&quot;&gt;</code></li>
+<li>Add the controller to the <em>todoApp</em> module in the CoffeeScript file:</li>
+</ol>
+<pre class="hljs"><code class="javascript">angular.module(<span class="hljs-string">"todoApp"</span>, [])
+  .controller(<span class="hljs-string">"TodoCtrl"</span>, TodoCtrl)
+</code></pre>
+<p>The following JS Bin shows the 1:1 conversion result.</p>
+<p><a class="jsbin-embed" href="http://jsbin.com/eJOVofO/2/embed?html,js,output">JS Bin</a><script src="http://static.jsbin.com/js/embed.js"></script></p>
+<h3 id="using-a-coffeescript-class-with-methods-on-scope">Using a CoffeeScript class with Methods on $scope</h3>
+<p>Great, we now have CoffeeScript code! To use a CoffeeScript class the first thing to figure out is how to use Angular dependency injection (DI). The answer is to pass everything as constructor parameters, as follows:</p>
+<pre class="hljs"><code class="javascript"><span class="hljs-keyword">class</span> TodoCtrl
+    constructor: ($scope) -&gt;
+        $scope.todos = [
+            text: <span class="hljs-string">"learn angular"</span>
+            done: <span class="hljs-literal">true</span>
+        ,
+            text: <span class="hljs-string">"build an angular app"</span>
+            done: <span class="hljs-literal">false</span>
+        ]
+</code></pre>
+<p>Once you do that, you run into another error: <em>Uncaught ReferenceError: $scope is not defined todo.js:23</em></p>
+<p>It turns out all the methods being defined on <code>$scope</code> cause that error since <code>$scope</code> isn&#39;t defined. You could solve this by moving all the function definitions off of <code>$scope</code> into the constructor.</p>
+<p><a class="jsbin-embed" href="http://jsbin.com/eJOVofO/3/embed?js,output">JS Bin</a><script src="http://static.jsbin.com/js/embed.js"></script></p>
+<p>This approach isn&#39;t recommended. It&#39;s not ideal and isn&#39;t making use of the CoffeeScript class. We&#39;ll fix that next.</p>
+<h3 id="improved-coffeescript-class-without-relying-on-scope">Improved CoffeeScript Class Without Relying on $scope</h3>
+<p>To leverage a proper class we need to define the functions on the class instead of on the <code>$scope</code>. Here are the changes I&#39;ve made to the HTML and CoffeeScript files to facilitate this:</p>
+<ol>
+<li>Assign <code>$scope</code> to the class in the constructor. This is done by using the <code>@</code> prefix: <code>constructor: (@$scope) -&gt;</code></li>
+<li>For now I&#39;ve kept the <code>todos</code> array hanging off of $scope, which means we would need to refer to it via <code>@$scope</code> in all methods. That&#39;s why step #1 was done.</li>
+<li>Change all <code>$scope</code> methods to class methods</li>
+</ol>
+<p>As soon as that&#39;s done we run into two issues:</p>
+<ul>
+<li><p>Issue: archive functionality breaks. To fix it we need to use a fat arrow in the <code>angular.forEach</code> to maintain the proper scope or rewrite the loop. The former looks like this:</p>
+<pre class="hljs"><code class="javascript">  archive: -&gt;
+      oldTodos = @todos
+      @todos = []
+      angular.forEach(oldTodos, (todo) =&gt;
+          @todos.push(todo) unless todo.done
+      )
+</code></pre>
+</li>
+<li><p>Issue: all methods bound to in HTML are hanging off <code>$scope</code> so they don&#39;t render to the page. The remaining count is missing and the text appears as &quot;remaining of 2&quot;. The <code>addTodo</code> method is broken too. We need a way to access the controller methods and this is done by assigning the controller to the <code>$scope</code> in the constructor and updating the template to access the methods from the controller. Thus, we prefix all methods with <code>ctrl.</code>, e.g., <code>ctrl.remaining()</code> (same for <code>archive</code> and <code>addTodo</code>).</p>
+<pre class="hljs"><code class="javascript">constructor: (@$scope) -&gt;
+# todos here
+$scope.ctrl = @
+</code></pre>
+</li>
+</ul>
+<p>Here&#39;s the full JS Bin sample of this approach:</p>
+<p><a class="jsbin-embed" href="http://jsbin.com/eJOVofO/4/embed?html,js,output">JS Bin</a><script src="http://static.jsbin.com/js/embed.js"></script></p>
+<h3 id="coffeescript-class-base-class-and-controller-as-syntax">CoffeeScript Class, Base Class, and Controller As Syntax</h3>
+<p>The <em>controller as</em> syntax was introduced in Angular 1.1.5, and it allows us to achieve the same result as assigning the controller to the scope. Rather than doing so in the CoffeeScript file, we can move it to the markup which makes it much more readable.</p>
+<p>In this final example I&#39;ve made the following changes:</p>
+<ul>
+<li>Changed Angular library to 1.1.5+</li>
+<li>Moved <code>todos</code> array and <code>todoText</code> to the class and update their template references (no more <code>$scope</code> reliance, except to log it to the console)</li>
+<li>Used <em>Controller as</em> syntax and updated template to prefix <code>ctrl.</code> as needed</li>
+<li>Introduced a <code>BaseCtrl</code> which the <code>TodoCtrl</code> will inherit from to make use of the <code>toJson</code> base method</li>
+<li>Added a <code>textarea</code> bound to the base <code>toJson</code> method</li>
+<li>Applied DI via the <code>$inject</code> approach to address minification concerns</li>
+</ul>
+<p><a class="jsbin-embed" href="http://jsbin.com/eJOVofO/5/embed?html,js,output">JS Bin</a><script src="http://static.jsbin.com/js/embed.js"></script></p>
+<h3 id="coffeescript-and-ng-min-incompatibility">CoffeeScript and ng-min Incompatibility</h3>
+<p>Unfortunately if you used to depend on <a href="https://github.com/btford/ngmin">ng-min</a> to convert the inline function DI approach to bracket notation it will no longer work with CoffeeScript classes. To address this you should use the <code>$inject</code> property instead, which I demonstrated in the final example above.</p>
+
+        </div>
+    </article>
+    <hr />
+
+    
+
+
+<h2>Previous Posts</h2>
+<nav class="linklist">
+	
+        
+        
+        
+        
+        
+		<li><span>Sun Jun 23 2013</span>
+		&raquo;
+		<a href="http://softwareninjaneer.com/blog/sharpkit-evaluation">Evaluating SharpKit - a C# to JavaScript converter</a></li>
+	
+        
+		<li><span>Thu Aug 02 2012</span>
+		&raquo;
+		<a href="http://softwareninjaneer.com/blog/null-coalescing-operator-precedence">The C# null coalescing operator and when 2 + 3 = 2</a></li>
+	
+        
+		<li><span>Mon Mar 05 2012</span>
+		&raquo;
+		<a href="http://softwareninjaneer.com/blog/returning-classes-that-inherit-listt-using-a-generic-method">Returning classes that inherit List&lt;T&gt; using a generic method</a></li>
+	
+        
+		<li><span>Sat Feb 25 2012</span>
+		&raquo;
+		<a href="http://softwareninjaneer.com/blog/designating-different-audio-devices-for-playback-and-communication-on-windows-7">Designating different audio devices for playback and communication on Windows 7</a></li>
+	
+        
+		<li><span>Wed Jan 11 2012</span>
+		&raquo;
+		<a href="http://softwareninjaneer.com/blog/productivity-tip-delimiting-multiple-lines-with-your-ide">Productivity tip: delimiting multiple lines with your IDE</a></li>
+	
+        
+		<li><span>Sun Nov 27 2011</span>
+		&raquo;
+		<a href="http://softwareninjaneer.com/blog/enumerating-weakly-typed-collections-with-implicitly-typed-variables">Enumerating weakly typed collections with implicitly typed variables</a></li>
+	
+        
+		<li><span>Tue Sep 20 2011</span>
+		&raquo;
+		<a href="http://softwareninjaneer.com/blog/regex-engine-updated-to-allow-timeouts-in-net-4-5">Regex engine updated to allow timeouts in .NET 4.5</a></li>
+	
+</nav>
+		</section>
+
+		<!-- Footer -->
+		<footer>
+			<hr />
+			<div class="pull-left">
+				<p>&copy; <a href="pages/about">Ahmad Mageed</a> 2015</p>
+				<p>
+				<a href="http://stackoverflow.com/users/59111/ahmad-mageed"><img src="http://stackoverflow.com/users/flair/59111.png?theme=dark" width="208" height="58" alt="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers"></a>
+				</p>
+			</div>
+			<div class="pull-right">
+				<p><small>Disclaimer: The opinions expressed herein are my own personal opinions and do not represent my employer's view in any way</small></p>
+			</div>
+		</footer>
+	</div><!-- /container -->
+
+	<!-- Scripts -->
+	<script >(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-25934924-1');
+ga('send', 'pageview');</script><script defer="defer"  src="http://softwareninjaneer.com/scripts/jquery.js"></script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script><script defer="defer"  src="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+	<!-- Use the .htaccess and remove these lines to avoid edge case issues.
+		 More info: h5bp.com/i/378 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<!-- Our site title and description -->
+	<title>Creating an AngularJS reset field directive | Ahmad Mageed - Software Ninjaneer</title>
+	<meta name="description" content="Ahmad Mageed on software engineering, .NET, C#, JavaScript, Regex and technology in general." />
+	<meta name="keywords" content="software, engineering, development, regex, C#, JavaScript, AngularJS" />
+	<meta name="author" content="Ahmad Mageed" />
+
+	<!-- Output DocPad produced meta elements -->
+	<meta name="generator" content="DocPad v6.63.3" />
+
+	<!-- Mobile viewport optimized: h5bp.com/viewport -->
+	<meta name="viewport" content="width=device-width" />
+
+	<!-- Icons -->
+		<link rel="shortcut icon" href="http://softwareninjaneer.com/images/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/icons/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="images/icons/apple-touch-icon-57-precomposed.png">
+
+	<!-- Shims: IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script async src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link  rel="stylesheet" href="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/css/bootstrap.min.css" /><link  rel="stylesheet" href="http://softwareninjaneer.com/styles/style.css" />
+</head>
+<body>
+	<!-- Menu -->
+	<div class="navbar navbar-inverse navbar-static-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="http://softwareninjaneer.com/"><img src="http://softwareninjaneer.com/images/snlogo.png"></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/blog"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/blog" property="dc:title">
+								Blog Posts
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/regextra"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/regextra" property="dc:title">
+								Regextra Project
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/pages/about"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/pages/about" property="dc:title">
+								About Ahmad
+							</a>
+						</li>
+					
+				</ul>
+			</div><!--/.navbar-collapse -->
+		</div>
+	</div>
+
+	<!-- Content -->
+	<div class="container">
+		<!-- Content -->
+		<section id="content" class="content">
+			<article id="post" class="post">
+	<h1>Creating an AngularJS reset field directive</h1>
+	<div class="post-date">Tuesday, January 21, 2014</div>
+	<div class="post-content"><p>Do you know those helpful little <code>X</code> icons that appear in form fields as you&#39;re typing? The ones that you click on to clear the entire text entry? I decided to build an AngularJS directive called <code>resetField</code> to do just that, with the additional goal of clearing the underlying <code>ngModel</code>.</p>
+<p>If you&#39;re eager to grab the code or check out the demo, here you go:</p>
+<ul>
+<li>Code: <a href="https://github.com/amageed/angular-resetfield">GitHub repo</a></li>
+<li>Demo: <a href="http://jsbin.com/OgogiwEV/22/edit?html,css,js,output">JSBin demo</a></li>
+</ul>
+<p>Some browsers include this feature out of the box. IE10+ does for text related input elements, and WebKit browsers might add icons for input types of search. You could write a directive that detects the native support and keeps it (by returning and doing nothing), as in the case of IE10+, or opt to apply your directive to all browsers and disable any native functionality. I opted for the latter since it keeps the look and feel consistent across browsers. Either way, you would have to write code to detect the feature, or CSS to disable it.</p>
+<p>The following list covers my desired behavior for this feature:</p>
+<ul>
+<li>Limited to input elements with types that make sense to reset (mainly text fields that get no special browser control appearance)</li>
+<li>Limited to elements using <code>ngModel</code></li>
+<li>Hide the built in clear field icon for IE10+ that&#39;s applied to input elements</li>
+<li>Hide the built in WebKit search cancel icon that&#39;s applied when <code>type=&quot;search&quot;</code> is used</li>
+<li>Icon appears inside the textbox</li>
+<li>Icon visibility is dependent on the input&#39;s content (hidden when empty, otherwise visible)</li>
+<li>Icon appears when the input gains focus and it isn&#39;t empty</li>
+<li>Icon disappears when the input field loses focus</li>
+<li>Add some CSS3 Animations with <code>ngAnimate</code></li>
+</ul>
+<p>To get an idea of how this would look I began with an input field, followed by a <a href="http://fontawesome.io/">Font Awesome</a> icon. I added CSS to right-align the icon and gave the field some padding so text wouldn&#39;t clash with the icon. Handling the built-in WebKit and IE10+ icons was a matter of disabling the appropriate styles by using the relevant CSS pseudo-classes on our selectors. This CSS covers most of the style related items on my list, except for animations (I&#39;ll get to that later).</p>
+<pre class="hljs"><code class="css"><span class="hljs-comment">/* prevent text from appearing underneath the icon */</span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">padding-right</span>:<span class="hljs-value"> <span class="hljs-number">19</span>px</span></span>;
+<span class="hljs-rule">}</span></span>
+
+<span class="hljs-comment">/* hide the built-in IE10+ clear field icon */</span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span><span class="hljs-pseudo">::-ms-clear</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> none</span></span>;
+<span class="hljs-rule">}</span></span>
+
+<span class="hljs-comment">/* hide cancel icon for search type */</span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span><span class="hljs-pseudo">::-webkit-search-cancel-button</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">-webkit-appearance</span>:<span class="hljs-value"> none</span></span>;
+<span class="hljs-rule">}</span></span>
+
+<span class="hljs-comment">/* icon styles */</span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span> + <span class="hljs-class">.fa</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">position</span>:<span class="hljs-value"> relative</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">right</span>:<span class="hljs-value"> <span class="hljs-number">19</span>px</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">color</span>:<span class="hljs-value"> <span class="hljs-hexcolor">#C0C0C0</span></span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">cursor</span>:<span class="hljs-value"> default</span></span>;
+<span class="hljs-rule">}</span></span>
+</code></pre>
+<pre class="hljs"><code class="xml"><span class="hljs-comment">&lt;!-- head content --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">"stylesheet"</span>&gt;</span>
+
+<span class="hljs-comment">&lt;!-- body content --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text"</span> <span class="hljs-attribute">reset-field</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">input</span>&gt;</span>
+<span class="hljs-comment">&lt;!-- the icon will be added by the directive and is shown here for clarity --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">i</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"fa fa-times-circle"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">i</span>&gt;</span>
+</code></pre>
+<p>That should yield something similar to this: <img src="http://softwareninjaneer.com/images/ResetFieldExample.png" alt="Reset field icon appearance"></p>
+<p>The idea is for an input element to use the <code>reset-field</code> directive, which will add the icon next to the element automatically. Next, I needed a way to toggle the icon&#39;s visibility. I also wanted the icon to be clickable to trigger the reset. With these two issues in mind, I added some directives to the icon&#39;s markup:</p>
+<pre class="hljs"><code class="xml"><span class="hljs-tag">&lt;<span class="hljs-title">i</span> <span class="hljs-attribute">ng-show</span>=<span class="hljs-value">"enabled"</span> <span class="hljs-attribute">ng-mousedown</span>=<span class="hljs-value">"reset()"</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"fa fa-times-circle"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">i</span>&gt;</span>
+</code></pre>
+<p>Notice something odd? I&#39;m using <code>ng-mousedown</code> instead of <code>ng-click</code>. The latter worked for me originally, but eventually I added a <code>blur</code> binding on the input element, and that interfered with clicking on the icon (the icon&#39;s visibility would be toggled without affecting the content). Since the <code>mousedown</code> event gets fired prior to the <code>blur</code> event, using <code>ng-mousedown</code> resolves the issue.</p>
+<p>By updating <code>scope.enabled</code> I can toggle the icon&#39;s visibility. The <code>scope.reset()</code> function will handle the reset whenever the icon is clicked. The icon markup uses typical Angular directives, but on its own it&#39;s just markup. To get it to function as expected it needs to be compiled and given a scope. To achieve this I use the <a href="http://docs.angularjs.org/api/ng.$compile"><code>$compile</code> service</a>, which returns a linker function that takes the <code>scope</code> available from the directive&#39;s link function.</p>
+<p>To illustrate how this fits into the overall directive, consider the following (incomplete) setup to get a sense of the structure thus far:</p>
+<pre class="hljs"><code class="javascript">angular.module(<span class="hljs-string">'app'</span>).directive(<span class="hljs-string">'resetField'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($compile)</span> {</span>
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-built_in">require</span>: <span class="hljs-string">'ngModel'</span>,
+    scope: {},
+    link: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(scope, element)</span> {</span>
+      <span class="hljs-comment">// compiled reset icon template</span>
+      <span class="hljs-keyword">var</span> template = $compile(<span class="hljs-string">'&lt;i ng-show="enabled" ng-mousedown="reset()" class="fa fa-times-circle"&gt;&lt;/i&gt;'</span>)(scope);
+      element.after(template);
+    }
+  };
+});
+</code></pre>
+<p>So far the directive uses an isolated scope and the link function gives us access to the scope and target element. The directive depends on <code>$compile</code>, and is limited to elements with an underlying model since it requires the <code>ngModel</code> controller. The icon markup is compiled with an isolated scope. Next, the compiled template is appended next to the target element.</p>
+<p>To limit it to input elements I will test the element&#39;s <code>nodeName</code>. To access the element though, I need to access <code>element[0]</code> to get the actual DOM element rather than the wrapped jqLite/Angular version. I also want to limit it to input types that make sense to have this icon applied to (i.e., mainly text related fields, not radio buttons, or date fields that will be rendered differently by browsers). I can achieve this by inspecting the <code>type</code> property of the element&#39;s attributes. The link function&#39;s third parameter gives me access to the attributes (<code>attrs</code> below).</p>
+<pre class="hljs"><code class="javascript">link: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(scope, element, attrs)</span> {</span>
+  <span class="hljs-comment">// limit to input element of specific types</span>
+  <span class="hljs-keyword">var</span> inputTypes = <span class="hljs-regexp">/text|search|tel|url|email|password/i</span>;
+  <span class="hljs-keyword">if</span> (el[<span class="hljs-number">0</span>].nodeName !== <span class="hljs-string">"INPUT"</span>)
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"resetField is limited to input elements"</span>);
+  <span class="hljs-keyword">if</span> (!inputTypes.test(attrs.type))
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Invalid input type for resetField: "</span> + attrs.type);
+</code></pre>
+<p>Next, I&#39;ll add the logic that determines when to show or hide the icon. I want to show the icon when the element has content. Binding to the element&#39;s <code>change</code> event is the easiest way to handle this. Hopefully your app targets modern browsers which support the <code>change</code> event, otherwise you might need to resort to <code>keyup</code> and <code>keydown</code> type of events which can get a little messy when you want to detect changes to handle the delete/backspace/ctrl/shift keys. The <code>change</code> event takes the hassle out of all that and works intuitively.</p>
+<p>To check whether the content is empty I could perform standard length checks on the element&#39;s value. Instead, I&#39;ve opted to use the <code>NgModelController.$isEmpty</code> function which performs a few additional checks. I&#39;ll be needing the controller anyway for the reset functionality, so it isn&#39;t being brought in solely for this purpose. The link function&#39;s fourth parameter provides access to the <code>NgModelController</code>.</p>
+<p>This gives us the following updated directive:</p>
+<pre class="hljs"><code class="javascript">link: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(scope, element, attrs, ctrl)</span> {</span>
+  <span class="hljs-comment">/* limit to input element... */</span>
+
+  <span class="hljs-comment">/* compiled reset icon template... */</span>
+
+  element.bind(<span class="hljs-string">'input'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+    scope.enabled = !ctrl.$isEmpty(element.val());
+  })
+</code></pre>
+<p>If the element gains or loses focus, I need to update the icon&#39;s visibility accordingly. I achieve this by binding to the <code>focus</code> and <code>blur</code> events. Since the focus changes don&#39;t affect the content I need force an update by calling <code>$scope.apply()</code>. In fact, Angular does just that under the covers when it handles the <code>input</code> event.</p>
+<p>With these concerns in mind, the bindings now resemble the following:</p>
+<pre class="hljs"><code class="javascript">element.bind(<span class="hljs-string">'input'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  scope.enabled = !ctrl.$isEmpty(element.val());
+})
+.bind(<span class="hljs-string">'focus'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  scope.enabled = !ctrl.$isEmpty(element.val());
+  scope.$apply();
+})
+.bind(<span class="hljs-string">'blur'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+  scope.enabled = <span class="hljs-literal">false</span>;
+  scope.$apply();
+});
+</code></pre>
+<p>The next piece of the puzzle is implementing the <code>reset()</code> function that gets called whenever the icon is clicked. This is the main part of the code that I changed a few times and wonder if there&#39;s a better way to pull off. The main challenge was that resetting the value directly, via <code>element.val(null)</code>, wasn&#39;t affecting the model. In other words, the binding wouldn&#39;t kick in. Instead, I needed to use a pair of <code>NgModelController</code> functions to update the view (and model), then render the changes to the UI. Specifically, the <code>$setViewValue()</code> function updates the view&#39;s value (and ultimately the model&#39;s value), and the <code>$render()</code> function is responsible for actually updating the view (i.e., the UI gets updated).</p>
+<p>After the UI update the focus is lost, so I use the <code>$timeout</code> service to reset it. A piece of advice I received at <a href="http://ng-conf.org/">ng-conf 2014</a> was that I could get away with <code>setTimeout</code> for better performance since it wouldn&#39;t trigger a digest cycle. In other words, <code>$timeout</code> is useful if I have other changes that would benefit from triggering a digest and for testability. The good news is that according to the <a href="http://docs.angularjs.org/api/ng.$timeout"><code>$timeout</code> documentation</a> I can still use it and avoid a digest by passing in <code>false</code> to the <code>invokeApply</code> parameter.</p>
+<p>With these additions the directive resembles the following:</p>
+<pre class="hljs"><code class="javascript"><span class="hljs-comment">// add $timeout</span>
+angular.module(<span class="hljs-string">'app'</span>).directive(<span class="hljs-string">'resetField'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($compile, $timeout)</span> {</span>
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-built_in">require</span>: <span class="hljs-string">'ngModel'</span>,
+    scope: {},
+    link: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(scope, el, attrs, ctrl)</span> {</span>
+      <span class="hljs-comment">/* limit to input element... */</span>
+
+      <span class="hljs-comment">/* compiled reset icon template... */</span>
+
+      scope.reset = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+        ctrl.$setViewValue(<span class="hljs-literal">null</span>);
+        ctrl.$render();
+        $timeout(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+            el[<span class="hljs-number">0</span>].focus();
+        }, <span class="hljs-number">0</span>, <span class="hljs-literal">false</span>);
+      };
+</code></pre>
+<p>At this point I&#39;ve covered everything on my list of requirements and the final item is adding animations. I&#39;ve decided to leverage the awesome <a href="https://daneden.me/animate/">Animate.css library</a>. It provides a number of named CSS3 keyframe animations.</p>
+<p>Since the icon uses <code>ng-show</code>, the Angular animation library allows us to plugin to the animation transitions through the <code>ng-hide-*</code> classes that are added when the <code>ng-show</code> value changes. To hook into these I&#39;ll add the <code>fadeOut</code> animation (from Animate.css) to the <code>ng-hide-add</code> class, and the &#39;fadeIn&#39; animation for the <code>ng-hide-remove</code> class. For more details on Angular animations check out <a href="http://www.yearofmoo.com/2013/08/remastered-animation-in-angularjs-1-2.html">&quot;Remastered Animations in AngularJS 1.2.&quot;</a>.</p>
+<p>A minor issue I ran into with the CSS was that I had to use <code>display:inline</code> to get this to appear smoothly, rather than the <code>display:block</code> suggested by the aforementioned blog post.</p>
+<p>To include Animate.css and ngAnimate:</p>
+<pre class="hljs"><code class="xml">  <span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"//cdnjs.cloudflare.com/ajax/libs/animate.css/2.0/animate.min.css"</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">"stylesheet"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-animate.min.js"</span>&gt;</span><span class="javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+</code></pre>
+<p>The CSS needed to work with ngAnimate:</p>
+<pre class="hljs"><code class="css"><span class="hljs-comment">/* animations for ngAnimate */</span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span> + <span class="hljs-class">.fa</span><span class="hljs-class">.ng-hide-add</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value">inline<span class="hljs-important">!important</span></span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">-webkit-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.3</span>s fadeOut</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">-moz-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.3</span>s fadeOut</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">-ms-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.3</span>s fadeOut</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">animation</span>:<span class="hljs-value"> <span class="hljs-number">0.3</span>s fadeOut</span></span>;
+<span class="hljs-rule">}</span></span>
+<span class="hljs-tag">input</span><span class="hljs-attr_selector">[reset-field]</span> + <span class="hljs-class">.fa</span><span class="hljs-class">.ng-hide-remove</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">-webkit-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.5</span>s fadeIn</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">-moz-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.5</span>s fadeIn</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">-ms-animation</span>:<span class="hljs-value"> <span class="hljs-number">0.5</span>s fadeIn</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">animation</span>:<span class="hljs-value"> <span class="hljs-number">0.5</span>s fadeIn</span></span>;
+<span class="hljs-rule">}</span></span>
+</code></pre>
+<p>Next, the <code>ngAnimate</code> module needs to be included:</p>
+<pre class="hljs"><code class="javascript">angular.module(<span class="hljs-string">'app'</span>, [<span class="hljs-string">'ngAnimate'</span>])
+</code></pre>
+<p>With these pieces in place the icon now fades in when the input element has text or gains focus (when it&#39;s not empty) and fades out when the element becomes empty (while active) or loses focus.</p>
+<p>The complete directive looks like this:</p>
+<pre class="hljs"><code class="javascript">angular.module(<span class="hljs-string">'am.resetField'</span>, []).directive(<span class="hljs-string">'resetField'</span>, [<span class="hljs-string">'$compile'</span>, <span class="hljs-string">'$timeout'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($compile, $timeout)</span> {</span>
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-built_in">require</span>: <span class="hljs-string">'ngModel'</span>,
+    scope: {},
+    link: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(scope, el, attrs, ctrl)</span> {</span>
+      <span class="hljs-comment">// limit to input element of specific types</span>
+      <span class="hljs-keyword">var</span> inputTypes = <span class="hljs-regexp">/text|search|tel|url|email|password/i</span>;
+      <span class="hljs-keyword">if</span> (el[<span class="hljs-number">0</span>].nodeName !== <span class="hljs-string">"INPUT"</span>) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"resetField is limited to input elements"</span>);
+      }
+      <span class="hljs-keyword">if</span> (!inputTypes.test(attrs.type)) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">"Invalid input type for resetField: "</span> + attrs.type);
+      }
+
+      <span class="hljs-comment">// compiled reset icon template</span>
+      <span class="hljs-keyword">var</span> template = $compile(<span class="hljs-string">'&lt;i ng-show="enabled" ng-mousedown="reset()" class="fa fa-times-circle"&gt;&lt;/i&gt;'</span>)(scope);
+      el.after(template);
+
+      scope.reset = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+        ctrl.$setViewValue(<span class="hljs-literal">null</span>);
+        ctrl.$render();
+        $timeout(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+            el[<span class="hljs-number">0</span>].focus();
+        }, <span class="hljs-number">0</span>, <span class="hljs-literal">false</span>);
+      };
+
+      el.bind(<span class="hljs-string">'input'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+        scope.enabled = !ctrl.$isEmpty(el.val());
+      })
+      .bind(<span class="hljs-string">'focus'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+        scope.enabled = !ctrl.$isEmpty(el.val());
+        scope.$apply();
+      })
+      .bind(<span class="hljs-string">'blur'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+        scope.enabled = <span class="hljs-literal">false</span>;
+        scope.$apply();
+      });
+    }
+  };
+}]);
+</code></pre>
+<p>I spoke with Dave Smith at <a href="http://ng-conf.org/">ng-conf 2014</a>. He gave a nice &quot;Deep Dive into Custom Directives&quot; session and kindly accepted to code review my directive to see if I could make improvements. Replacing <code>$timeout</code> with <code>setTimeout</code> was one of those suggestions, which I covered earlier. One of the interesting suggestions he made was to turn this into a component instead, which would allow me to get rid of the <code>$compile</code> step and get rid of the <code>NgModelController</code> calls made in the <code>reset()</code>, perhaps by a direct <code>element.val(null)</code> call instead.</p>
+<p>The feedback was much appreciated and I might try my hand at that next. I suppose that approach might allow me to remove the input type checking as well, since the usage of the component leaves no room for ambiguity, or I can still apply the type via attributes.</p>
+<p>Be sure to check out my <a href="https://github.com/amageed/angular-resetfield">GitHub repo</a> where I have a demo setup of the directive along with a suite of Karma/Jasmine tests.</p>
+<p>If you&#39;ve got any code improvement suggestions, especially around the <code>reset</code> functionality, your feedback is welcome!</p>
+</div>
+</article>
+
+<div class="social-buttons"><div class="hacker-news-submit-button service-button">
+	<a href="http://news.ycombinator.com/submit" class="hn-share-button" data-url="http://softwareninjaneer.com/blog/creating-an-angularjs-reset-field-directive">Vote on HN</a>
+	<script>
+		(function(d, t) {
+			var g = d.createElement(t),
+				s = d.getElementsByTagName(t)[0];
+				g.src = '//hnbutton.appspot.com/static/hn.min.js';
+			s.parentNode.insertBefore(g, s);
+		}(document, 'script'));
+	</script>
+</div><div class="reddit-submit-button service-button">
+	<script type="text/javascript" src="http://en.reddit.com/static/button/button1.js"></script>
+</div><div class="google-plus-one-button service-button">
+	<div class="g-plusone" data-size="medium" data-href="http%3A//softwareninjaneer.com/blog/creating-an-angularjs-reset-field-directive"></div>
+	<script>
+		(function() {
+			var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+			po.src = 'https://apis.google.com/js/plusone.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+		})();
+	</script>
+</div><div class="twitter-tweet-button service-button">
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="amageed" data-related="amageed">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div><div class="twitter-follow-button service-button">
+	<a href="https://twitter.com/amageed" class="twitter-follow-button" data-show-count="false">Follow @amageed</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div></div>
+
+<div id="disqus_thread"></div>
+<script>
+	(function(){
+		window.disqus_shortname = 'softwareninjaneer';
+		window.disqus_developer = '1';
+		window.disqus_url = 'http://softwareninjaneer.com/blog/creating-an-angularjs-reset-field-directive';
+		window.disqus_identifier = 'blog-creating-an-angularjs-reset-field-directive';
+		window.disqus_title = 'Creating an AngularJS reset field directive';
+		if ( window.DISQUS ) {
+			return DISQUS.reset({
+				reload: true,
+				config: function () {
+					this.page.identifier = window.disqus_identifier;
+					this.page.url = window.disqus_url;
+					this.page.title = window.disqus_title;
+				}
+			});
+		}
+		else {
+		  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		  dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+		  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		}
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+<footer>
+	
+</footer>
+		</section>
+
+		<!-- Footer -->
+		<footer>
+			<hr />
+			<div class="pull-left">
+				<p>&copy; <a href="pages/about">Ahmad Mageed</a> 2015</p>
+				<p>
+				<a href="http://stackoverflow.com/users/59111/ahmad-mageed"><img src="http://stackoverflow.com/users/flair/59111.png?theme=dark" width="208" height="58" alt="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers"></a>
+				</p>
+			</div>
+			<div class="pull-right">
+				<p><small>Disclaimer: The opinions expressed herein are my own personal opinions and do not represent my employer's view in any way</small></p>
+			</div>
+		</footer>
+	</div><!-- /container -->
+
+	<!-- Scripts -->
+	<script >(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-25934924-1');
+ga('send', 'pageview');</script><script defer="defer"  src="http://softwareninjaneer.com/scripts/jquery.js"></script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script><script defer="defer"  src="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+	<!-- Use the .htaccess and remove these lines to avoid edge case issues.
+		 More info: h5bp.com/i/378 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<!-- Our site title and description -->
+	<title>.NET gotcha: number validation and when unicode attacks! | Ahmad Mageed - Software Ninjaneer</title>
+	<meta name="description" content="Ahmad Mageed on software engineering, .NET, C#, JavaScript, Regex and technology in general." />
+	<meta name="keywords" content="software, engineering, development, regex, C#, JavaScript, AngularJS" />
+	<meta name="author" content="Ahmad Mageed" />
+
+	<!-- Output DocPad produced meta elements -->
+	<meta name="generator" content="DocPad v6.63.3" />
+
+	<!-- Mobile viewport optimized: h5bp.com/viewport -->
+	<meta name="viewport" content="width=device-width" />
+
+	<!-- Icons -->
+		<link rel="shortcut icon" href="http://softwareninjaneer.com/images/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/icons/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="images/icons/apple-touch-icon-57-precomposed.png">
+
+	<!-- Shims: IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script async src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link  rel="stylesheet" href="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/css/bootstrap.min.css" /><link  rel="stylesheet" href="http://softwareninjaneer.com/styles/style.css" />
+</head>
+<body>
+	<!-- Menu -->
+	<div class="navbar navbar-inverse navbar-static-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="http://softwareninjaneer.com/"><img src="http://softwareninjaneer.com/images/snlogo.png"></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/blog"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/blog" property="dc:title">
+								Blog Posts
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/regextra"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/regextra" property="dc:title">
+								Regextra Project
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/pages/about"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/pages/about" property="dc:title">
+								About Ahmad
+							</a>
+						</li>
+					
+				</ul>
+			</div><!--/.navbar-collapse -->
+		</div>
+	</div>
+
+	<!-- Content -->
+	<div class="container">
+		<!-- Content -->
+		<section id="content" class="content">
+			<article id="post" class="post">
+	<h1>.NET gotcha: number validation and when unicode attacks!</h1>
+	<div class="post-date">Friday, March 28, 2014</div>
+	<div class="post-content"><p>Imagine you&#39;re working with .NET and have some numeric input with a specific format that you need to validate and convert the number portion to do something interesting with. You decide to tackle this using regular expressions. </p>
+<p>You get to work, quickly constructing a pattern using the <code>\d</code> metacharacter to match digits, then use <code>int.Parse</code> on the match. Everything checks out, your unit tests pass, and you deploy your app. You&#39;re a regex ninja!</p>
+<p>Fast forward and you start noticing errors being logged around your regex. Specifically, exceptions are being thrown on the <code>int.Parse</code> portion. Surprised, you think, &quot;What?! That&#39;s impossible! The regex is solid. It matches numbers, so how could <code>int.Parse</code> possibly fail?&quot;</p>
+<p>Well, the hint is in this post&#39;s title. Consider this snippet:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"42"</span>;
+<span class="hljs-keyword">string</span> pattern = <span class="hljs-string">@"^\d+$"</span>;
+Match m = Regex.Match(input, pattern);
+<span class="hljs-keyword">if</span> (m.Success) 
+{
+    <span class="hljs-keyword">int</span> num;
+    <span class="hljs-keyword">bool</span> result = <span class="hljs-keyword">int</span>.TryParse(m.Value, <span class="hljs-keyword">out</span> num);
+    Console.WriteLine(<span class="hljs-string">"Matched number: {0} -- Parsed: {1}"</span>, input, result);
+}
+<span class="hljs-keyword">else</span>
+{
+    Console.WriteLine(<span class="hljs-string">"Invalid number: {0}"</span>, input);
+}
+
+<span class="hljs-comment">// Matched number: 42 -- Parsed: True</span>
+</code></pre>
+<p>Simple, right? To get this to fail let&#39;s pass in some Arabic numbers:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"\x0664\x0662"</span>; <span class="hljs-comment">// Arabic #42: ٤٢</span>
+
+<span class="hljs-comment">// Matched number: ٤٢ -- Parsed: False</span>
+</code></pre>
+<p>Notice that the output indicates that the Arabic numbers were valid. The regex matches but <code>int.TryParse</code> fails. In the scenario I described earlier we used <code>int.Parse</code>, confident that we would have a valid number, but in this example <code>int.Parse</code> will throw a <code>FormatException</code>.</p>
+<p>The reason is <code>\d</code> matches more than just 0-9. According <a href="http://msdn.microsoft.com/en-us/library/20bw873z%28v=vs.110%29.aspx" title="Character Classes in Regular Expressions">to MSDN</a> (emphasis mine):</p>
+<blockquote>
+<p><code>\d</code> matches any decimal digit. It is equivalent to the <code>\p{Nd}</code> regular expression pattern, which includes the standard decimal digits 0-9 as well <strong>as the decimal digits of a number of other character sets</strong>.</p>
+</blockquote>
+<p>If you normally validate numbers using <code>^\d+$</code> it clearly isn&#39;t enough. There are two ways around this, to limit the valid digits to 0-9:</p>
+<ol>
+<li>Use <code>[0-9]</code> instead. It is explicit and will not accept unicode decimal digits.</li>
+<li>Continue using <code>\d</code> and add <code>RegexOptions.ECMAScript</code> to use ECMAScript-compliant behavior. This option makes <code>\d</code> equivalent to <code>[0-9]</code>.</li>
+</ol>
+<p>An updated snippet with the ECMAScript option follows:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"\x0664\x0662"</span>;
+<span class="hljs-keyword">string</span> pattern = <span class="hljs-string">@"^\d+$"</span>;
+Match m = Regex.Match(input, pattern, RegexOptions.ECMAScript);
+<span class="hljs-comment">// ... same code as before ...</span>
+
+<span class="hljs-comment">// Invalid number: ٤٢</span>
+</code></pre>
+<p>Note, there are similar issues when using <code>\w</code> where it isn&#39;t limited to ASCII characters. Refer to <a href="http://msdn.microsoft.com/en-us/library/yd1hzczs%28v=vs.110%29.aspx#ECMAScript">ECMAScript Matching Behavior</a>. In addition, the same issue applies to <code>Char.IsDigit</code> and <code>Char.IsLetter</code>.</p>
+<p>To demonstrate:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"\x0664\x0662"</span>;
+Console.WriteLine(Char.IsDigit(input[<span class="hljs-number">0</span>])); <span class="hljs-comment">// True</span>
+</code></pre>
+<p>Next time you reach for <code>\d</code>, keep these issues in mind! Typically someone will opt for <code>\d</code> thinking it&#39;s shorter while being unaware of these implications.</p>
+</div>
+</article>
+
+<div class="social-buttons"><div class="hacker-news-submit-button service-button">
+	<a href="http://news.ycombinator.com/submit" class="hn-share-button" data-url="http://softwareninjaneer.com/blog/net-number-validation-and-when-unicode-attacks">Vote on HN</a>
+	<script>
+		(function(d, t) {
+			var g = d.createElement(t),
+				s = d.getElementsByTagName(t)[0];
+				g.src = '//hnbutton.appspot.com/static/hn.min.js';
+			s.parentNode.insertBefore(g, s);
+		}(document, 'script'));
+	</script>
+</div><div class="reddit-submit-button service-button">
+	<script type="text/javascript" src="http://en.reddit.com/static/button/button1.js"></script>
+</div><div class="google-plus-one-button service-button">
+	<div class="g-plusone" data-size="medium" data-href="http%3A//softwareninjaneer.com/blog/net-number-validation-and-when-unicode-attacks"></div>
+	<script>
+		(function() {
+			var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+			po.src = 'https://apis.google.com/js/plusone.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+		})();
+	</script>
+</div><div class="twitter-tweet-button service-button">
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="amageed" data-related="amageed">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div><div class="twitter-follow-button service-button">
+	<a href="https://twitter.com/amageed" class="twitter-follow-button" data-show-count="false">Follow @amageed</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div></div>
+
+<div id="disqus_thread"></div>
+<script>
+	(function(){
+		window.disqus_shortname = 'softwareninjaneer';
+		window.disqus_developer = '1';
+		window.disqus_url = 'http://softwareninjaneer.com/blog/net-number-validation-and-when-unicode-attacks';
+		window.disqus_identifier = 'blog-net-number-validation-and-when-unicode-attacks';
+		window.disqus_title = '.NET gotcha: number validation and when unicode attacks!';
+		if ( window.DISQUS ) {
+			return DISQUS.reset({
+				reload: true,
+				config: function () {
+					this.page.identifier = window.disqus_identifier;
+					this.page.url = window.disqus_url;
+					this.page.title = window.disqus_title;
+				}
+			});
+		}
+		else {
+		  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		  dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+		  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		}
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+<footer>
+	
+</footer>
+		</section>
+
+		<!-- Footer -->
+		<footer>
+			<hr />
+			<div class="pull-left">
+				<p>&copy; <a href="pages/about">Ahmad Mageed</a> 2015</p>
+				<p>
+				<a href="http://stackoverflow.com/users/59111/ahmad-mageed"><img src="http://stackoverflow.com/users/flair/59111.png?theme=dark" width="208" height="58" alt="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers"></a>
+				</p>
+			</div>
+			<div class="pull-right">
+				<p><small>Disclaimer: The opinions expressed herein are my own personal opinions and do not represent my employer's view in any way</small></p>
+			</div>
+		</footer>
+	</div><!-- /container -->
+
+	<!-- Scripts -->
+	<script >(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-25934924-1');
+ga('send', 'pageview');</script><script defer="defer"  src="http://softwareninjaneer.com/scripts/jquery.js"></script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script><script defer="defer"  src="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

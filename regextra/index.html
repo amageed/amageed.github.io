@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+	<!-- Use the .htaccess and remove these lines to avoid edge case issues.
+		 More info: h5bp.com/i/378 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<!-- Our site title and description -->
+	<title>Regextra Project | Ahmad Mageed - Software Ninjaneer</title>
+	<meta name="description" content="Ahmad Mageed on software engineering, .NET, C#, JavaScript, Regex and technology in general." />
+	<meta name="keywords" content="software, engineering, development, regex, C#, JavaScript, AngularJS" />
+	<meta name="author" content="Ahmad Mageed" />
+
+	<!-- Output DocPad produced meta elements -->
+	<meta name="generator" content="DocPad v6.63.3" />
+
+	<!-- Mobile viewport optimized: h5bp.com/viewport -->
+	<meta name="viewport" content="width=device-width" />
+
+	<!-- Icons -->
+		<link rel="shortcut icon" href="http://softwareninjaneer.com/images/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/icons/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="images/icons/apple-touch-icon-57-precomposed.png">
+
+	<!-- Shims: IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script async src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link  rel="stylesheet" href="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/css/bootstrap.min.css" /><link  rel="stylesheet" href="http://softwareninjaneer.com/styles/style.css" />
+</head>
+<body>
+	<!-- Menu -->
+	<div class="navbar navbar-inverse navbar-static-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="http://softwareninjaneer.com/"><img src="http://softwareninjaneer.com/images/snlogo.png"></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/blog"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/blog" property="dc:title">
+								Blog Posts
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/regextra"
+							class="active"
+						>
+							<a href="http://softwareninjaneer.com/regextra" property="dc:title">
+								Regextra Project
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/pages/about"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/pages/about" property="dc:title">
+								About Ahmad
+							</a>
+						</li>
+					
+				</ul>
+			</div><!--/.navbar-collapse -->
+		</div>
+	</div>
+
+	<!-- Content -->
+	<div class="container">
+		<!-- Content -->
+		<section id="content" class="content">
+			<article id="page" class="page">
+	<h1>Regextra Project</h1>
+    <hr />
+	<div class="page-content"><style>
+.success {
+    background-color: rgba(65, 242, 77, 0.1);
+}
+.error {
+    background-color: rgba(198, 15, 19, 0.1);
+}
+</style>
+
+<p><a href="https://github.com/amageed/regextra"><img style="position: absolute; top: 80px; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a></p>
+<h2 id="about">About</h2>
+<p><strong><em>Regextra</em></strong> is an <a href="https://github.com/amageed/regextra">open source .NET library</a> built to address problems that are handily solved by regular expressions. One component of the library is the <code>PassphraseRegex</code> class, which aids in strong passphrase validation. Using a fluent API, a variety of common rules can be applied to produce a pattern that can be used to validate input. The regex produced is generic enough that it can be used on the back-end, or on the front-end via JavaScript (which this page demonstrates!).</p>
+<p>A common question I&#39;ve seen on StackOverflow is how to write code that enforces strong passphrase or password rules. Popular responses tend to tackle the problem by using a regex with look-aheads. I&#39;ve seen this so much that I decided to have fun writing a solution that allowed people to produce regex patterns that would enforce such rules.</p>
+<h2 id="wiki">Wiki</h2>
+<p>Refer to the <a href="https://github.com/amageed/Regextra/wiki">wiki</a> for more details on the API. The rest of this page demonstrates some examples of generated patterns that can be tested via the input form fields.</p>
+<h2 id="examples">Examples</h2>
+<p>The following code generates a pattern to enforce a password of 8-25 characters that requires at least two lowercase letters in the range of <code>a-z</code> and numbers excluding those in the range of <code>0-4</code> (i.e., numbers in the <code>5-9</code> range are acceptable).</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> builder = PassphraseRegex.With.MinLength(<span class="hljs-number">8</span>)
+                                  .MaxLength(<span class="hljs-number">25</span>)
+                                  .IncludesRange(<span class="hljs-string">'a'</span>, <span class="hljs-string">'z'</span>)
+                                  .WithMinimumOccurrenceOf(<span class="hljs-number">2</span>)
+                                  .ExcludesRange(<span class="hljs-number">0</span>, <span class="hljs-number">4</span>);
+
+PassphraseRegexResult result = builder.ToRegex();
+
+<span class="hljs-keyword">if</span> (result.IsValid)
+{
+    <span class="hljs-keyword">if</span> (result.Regex.IsMatch(input))
+    {
+        <span class="hljs-comment">// passphrase meets requirements</span>
+    }
+    <span class="hljs-keyword">else</span>
+    {
+        <span class="hljs-comment">// passphrase is no good</span>
+    }
+}
+<span class="hljs-keyword">else</span>
+{
+    <span class="hljs-comment">// check the regex parse exception message for the generated pattern</span>
+    Console.WriteLine(result.Error);
+}
+</code></pre>
+<h2 id="try-it-">Try It!</h2>
+<p>Below are some validation goals, followed by the code used to produce the pattern. You can test the pattern out with your own input and the textbox&#39;s color will change based on the validity. <em>All patterns reject leading and trailing whitespace.</em></p>
+<p><strong>Goal:</strong> accept input that contains any of the specified characters (<strong>a, b, c, 1, 2, 3</strong>).</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> result = PassphraseRegex.That.IncludesAnyCharacters(<span class="hljs-string">"abc123"</span>)
+                                 .ToRegex();
+
+<span class="hljs-keyword">var</span> pattern = result.Pattern;
+</code></pre>
+<div class="well">
+    <p><strong>Pattern:</strong> <code>^(?=.*[abc123])(?!^\s|.*\s$).+$</code></p>
+    <ul>
+      <li><em>Valid:</em> <strong>a</strong>, <strong>1</strong>, <strong>f3</strong></li>
+      <li><em>Invalid:</em> <strong>x</strong>, <strong>z6</strong>, <strong>9</strong></li>
+    </ul>
+    <form class="form-group">
+        <input type="text" class="form-control" placeholder="Try it..." pattern="^(?=.*[abc123])(?!^\s|.*\s$).+$">
+        <p></p>
+    </form>
+</div>
+
+<hr />
+
+<p><strong>Goal:</strong> reject input that contains any of the specified characters (<strong>a, b, c, 1, 2, 3</strong>).</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> result = PassphraseRegex.That.ExcludesCharacters(<span class="hljs-string">"abc123"</span>)
+                                 .ToRegex();
+
+<span class="hljs-keyword">var</span> pattern = result.Pattern;
+</code></pre>
+<div class="well">
+    <p><strong>Pattern:</strong> <code>^(?!.*[abc123])(?!^\s|.*\s$).+$</code></p>
+    <ul>
+      <li><em>Valid:</em> <strong>x</strong>, <strong>z6</strong>, <strong>9</strong></li>
+      <li><em>Invalid:</em> <strong>a</strong>, <strong>f3</strong>, <strong>2</strong></li>
+    </ul>
+    <form class="form-group">
+        <input type="text" class="form-control" placeholder="Try it..." pattern="^(?!.*[abc123])(?!^\s|.*\s$).+$"><p></p>
+        <p></p>
+    </form>
+</div>
+
+<hr />
+
+<p><strong>Goal:</strong> accept input of length 2-6 that contains any of the characters in the range <code>a-z</code>.</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> result = PassphraseRegex.With.MinLength(<span class="hljs-number">2</span>)
+                                 .MaxLength(<span class="hljs-number">6</span>)
+                                 .IncludesRange(<span class="hljs-string">'a'</span>, <span class="hljs-string">'z'</span>)
+                                 .ToRegex();
+
+<span class="hljs-keyword">var</span> pattern = result.Pattern;
+</code></pre>
+<div class="well">
+    <p><strong>Pattern:</strong> <code>^(?=.*[a-z])(?!^\s|.*\s$).{2,6}$</code></p>
+    <ul>
+      <li><em>Valid:</em> <strong>ab</strong>, <strong>abc123</strong>, <strong>xyz</strong></li>
+      <li><em>Invalid:</em> <strong>a</strong> (too short), <strong>AB</strong> (case sensitive), <strong>12</strong>, <strong>!@#</strong>, <strong>abcdefg</strong> (too long)</li>
+    </ul>
+    <form class="form-group">
+        <input type="text" class="form-control" placeholder="Try it..." pattern="^(?=.*[a-z])(?!^\s|.*\s$).{2,6}$">
+        <p></p>
+    </form>
+</div>
+
+<hr />
+
+<p><strong>Goal:</strong> accept input that contains at least 2 occurrences of characters in the <code>0-9</code> range and excludes the characters <code>!</code>, <code>@</code>, <code>#</code>, and characters in the <code>a-z</code> range. The minimum length is set to 3 based on the number of rules specified, which are the Include/Exclude methods (<code>WithMinimumOccurrenceOf</code> isn&#39;t counted as a rule since it&#39;s a constraint applied to the <code>IncludesRange</code> rule).</p>
+<pre class="hljs"><code class="cs">    <span class="hljs-keyword">var</span> result = PassphraseRegex.Which.ExcludesRange(<span class="hljs-string">'a'</span>, <span class="hljs-string">'z'</span>)
+                                      .ExcludesCharacters(<span class="hljs-string">"!@#"</span>)
+                                      .IncludesRange(<span class="hljs-number">0</span>, <span class="hljs-number">9</span>)
+                                      .WithMinimumOccurrenceOf(<span class="hljs-number">2</span>)
+                                      .ToRegex();
+
+    <span class="hljs-keyword">var</span> pattern = result.Pattern;
+</code></pre>
+<div class="well">
+    <p><strong>Pattern:</strong> <code>^(?!.*[a-z])(?!.*[!@#])(?=.*[0-9].*[0-9])(?!^\s|.*\s$).{3,}$</code></p>
+    <ul>
+      <li><em>Valid:</em> <strong>123</strong>, <strong>8 % $9-4</strong>, <strong>A4 B5</strong> (case sensitive)</li>
+      <li><em>Invalid:</em> <strong>0</strong> (too short), <strong>ABC0</strong> (minimum digit occurrence not met), <strong>a1b2</strong>, <strong>123#</strong></li>
+    </ul>
+    <form class="form-group">
+        <input type="text" class="form-control" placeholder="Try it..." pattern="^(?!.*[a-z])(?!.*[!@#])(?=.*[0-9].*[0-9])(?!^\s|.*\s$).{3,}$">
+        <p></p>
+    </form>
+</div>
+
+<hr />
+
+<p><strong>Goal:</strong> accept input that contains characters in the <code>a-z</code> and <code>0-9</code> ranges, with a maximum length of 8 characters, and a maximum of 3 consecutive identical characters. The minimum length is set to 2 based on the number of rules specified, which are the two <code>Include</code> methods (the <code>Max*</code> methods below aren&#39;t counted as rules).</p></p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> result = PassphraseRegex.With.MaxLength(<span class="hljs-number">8</span>)
+                                 .IncludesRange(<span class="hljs-string">'a'</span>, <span class="hljs-string">'z'</span>)
+                                 .IncludesRange(<span class="hljs-string">'0'</span>, <span class="hljs-string">'9'</span>)
+                                 .MaxConsecutiveIdenticalCharacterOf(<span class="hljs-number">3</span>)
+                                 .ToRegex();
+
+<span class="hljs-keyword">var</span> pattern = result.Pattern;
+</code></pre>
+<div class="well">
+    <p><strong>Pattern:</strong> <code>^(?=.*[a-z])(?=.*[0-9])(?!.*?(.)\1{3})(?!^\s|.*\s$).{2,8}$</code></p>
+    <ul>
+      <li><em>Valid:</em> <strong>a1</strong>, <strong>abc123</strong>, <strong>aaa1a</strong> (4 &#39;a&#39; characters total, but not more than 3 of them are consecutive)</li>
+      <li><em>Invalid:</em> <strong>abcd12345</strong> (too long), <strong>aaaa1</strong> (exceeds max of 3 consecutive identical character constraint), <strong>abc</strong> (doesn&#39;t include any <code>0-9</code> characters)</li>
+    </ul>
+    <form class="form-group">
+        <input type="text" class="form-control" placeholder="Try it..." pattern="^(?=.*[a-z])(?=.*[0-9])(?!.*?(.)\1{3})(?!^\s|.*\s$).{2,8}$">
+        <p></p>
+    </form>
+</div>
+
+<hr />
+
+<p><strong>Goal:</strong> accept input that doesn&#39;t contain &quot;foo&quot; anywhere in the text (regardless of case).</p></p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> result = PassphraseRegex.That.ExcludesText(<span class="hljs-string">"foo"</span>)
+                                 .Options(RegexOptions.IgnoreCase)
+                                 .ToRegex();
+
+<span class="hljs-keyword">var</span> pattern = result.Pattern;
+</code></pre>
+<div class="well">
+    <p><strong>Pattern:</strong> <code>^(?!.*foo)(?!^\s|.*\s$).+$</code></p>
+    <ul>
+      <li><em>Valid:</em> <strong>a1</strong>, <strong>abc123</strong>, <strong>fizz</strong></li>
+      <li><em>Invalid:</em> <strong>foo</strong> (lowercase), <strong>FOO</strong> (uppercase), <strong>abcFoOxyz</strong> (mixed case)</li>
+    </ul>
+    <form class="form-group">
+        <input type="text" class="form-control" placeholder="Try it..." pattern="^(?!.*foo)(?!^\s|.*\s$).+$" pattern-flags="i">
+        <p></p>
+    </form>
+</div>
+
+<script type="text/javascript">
+    setTimeout(function() {
+        $('form').submit(function(event) {
+            event.preventDefault();
+        });
+        $('form > input').keyup(function() {
+            var el = $(this);
+            var re = new RegExp(el.attr('pattern'), el.attr('pattern-flags'));
+            var isValid = re.test(el.val());
+            el.removeClass('error success')
+              .addClass(isValid ? 'success' : 'error')
+              .parent()
+              .removeClass('has-error has-success')
+              .addClass(isValid ? 'has-success' : 'has-error');
+            el.next().text('Characters: ' + el.val().length);
+        });
+    }, 1500);
+</script></div>
+</article>
+		</section>
+
+		<!-- Footer -->
+		<footer>
+			<hr />
+			<div class="pull-left">
+				<p>&copy; <a href="pages/about">Ahmad Mageed</a> 2015</p>
+				<p>
+				<a href="http://stackoverflow.com/users/59111/ahmad-mageed"><img src="http://stackoverflow.com/users/flair/59111.png?theme=dark" width="208" height="58" alt="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers"></a>
+				</p>
+			</div>
+			<div class="pull-right">
+				<p><small>Disclaimer: The opinions expressed herein are my own personal opinions and do not represent my employer's view in any way</small></p>
+			</div>
+		</footer>
+	</div><!-- /container -->
+
+	<!-- Scripts -->
+	<script >(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-25934924-1');
+ga('send', 'pageview');</script><script defer="defer"  src="http://softwareninjaneer.com/scripts/jquery.js"></script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script><script defer="defer"  src="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

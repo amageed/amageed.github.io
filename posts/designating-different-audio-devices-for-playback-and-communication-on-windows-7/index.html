@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+	<!-- Use the .htaccess and remove these lines to avoid edge case issues.
+		 More info: h5bp.com/i/378 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<!-- Our site title and description -->
+	<title>Designating different audio devices for playback and communication on Windows 7 | Ahmad Mageed - Software Ninjaneer</title>
+	<meta name="description" content="Ahmad Mageed on software engineering, .NET, C#, JavaScript, Regex and technology in general." />
+	<meta name="keywords" content="software, engineering, development, regex, C#, JavaScript, AngularJS" />
+	<meta name="author" content="Ahmad Mageed" />
+
+	<!-- Output DocPad produced meta elements -->
+	<meta name="generator" content="DocPad v6.54.10" />
+
+	<!-- Mobile viewport optimized: h5bp.com/viewport -->
+	<meta name="viewport" content="width=device-width" />
+
+	<!-- Icons -->
+		<link rel="shortcut icon" href="images/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/icons/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="images/icons/apple-touch-icon-57-precomposed.png">
+
+	<!-- Shims: IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script async src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link  rel="stylesheet" href="http://softwareninjaneer.com/styles/twitter-bootstrap.css" /><link  rel="stylesheet" href="http://softwareninjaneer.com/styles/style.css" />
+</head>
+<body>
+	<!-- Menu -->
+	<div class="navbar navbar-inverse navbar-static-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="http://softwareninjaneer.com/"><img src="http://softwareninjaneer.com/images/snlogo.png"></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/pages/posts"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/pages/posts" property="dc:title">
+								Posts
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/regextra"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/regextra" property="dc:title">
+								Regextra Project
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/pages/about"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/pages/about" property="dc:title">
+								About Ahmad
+							</a>
+						</li>
+					
+				</ul>
+			</div><!--/.navbar-collapse -->
+		</div>
+	</div>
+
+	<!-- Content -->
+	<div class="container">
+		<!-- Content -->
+		<section id="content" class="content">
+			<article id="post" class="post">
+	<h1>Designating different audio devices for playback and communication on Windows 7</h1>
+	<div class="post-date">Saturday, February 25, 2012</div>
+	<div class="post-content"><p>My desktop is hooked up to external speakers, which all audio is emitted from. However, if I want to jump on a Skype call (or similar), all sound is routed to the USB headset as soon as I plug it in. This is great for the duration of the call, but since I have Pandora running almost constantly, or might want to watch (and hear) a video, I don&#39;t want to wear the headset all day. Plus, if I kept it plugged in I might miss all audio cues from Outlook, Skype notifications, and so on. True, most programs have visual cues too, but I might not be looking at that portion of the screen, or at the monitor the application lives on in the case of dual monitors.</p>
+<p>I also didn&#39;t want to keep plugging and unplugging the USB, which meant I had to use an accessible USB slot instead of one behind the desktop - let&#39;s face it, who wants to see a distracting bunch of cable near them?</p>
+<p>Determined to find a solution to a seemingly simple need, I played around with the sound settings. Originally I thought there might be a way to specify the audio device on a per application basis. Instead, I was happy to find a user-friendly option that&#39;s built right into Windows 7 (maybe Vista too, not sure, but you&#39;re not really using that are you?). Essentially, Windows 7 allows us to specify a <em>default device</em> and a <em>default communications device</em>. Without further ado, here&#39;s how I set it up!</p>
+<h3 id="setting-up-playback-devices">Setting up playback devices</h3>
+<p><strong>Step 1:</strong> Right-click the volume control, and select <em>&quot;Playback devices&quot;</em></p>
+<p class="text-center">
+    <img src="http://softwareninjaneer.com/images/audio-setup/VolumeMenu.png" alt="Volume Menu to select Playback devices">
+</p>
+
+<p>This will bring up the Sound control panel, which will look similar to the following image. On the <em>Playback</em> tab notice that the USB headset is currently set as the default device. Your setup might be different, which is fine since the next couple of steps are the important ones.</p>
+<p class="text-center">
+    <img src="http://softwareninjaneer.com/images/audio-setup/SoundDialog.png" alt="Sound dialog with USB headset plugged in">
+</p>
+
+<p><strong>Step 2:</strong> set your desired speakers as the default device. A green check-mark icon will appear next to it.</p>
+<p class="text-center">
+    <img src="http://softwareninjaneer.com/images/audio-setup/SoundDialogSetDefault.png" alt="Set default device">
+</p>
+
+<p><strong>Step 3:</strong> set the USB headset as the default communication device.</p>
+<p class="text-center">
+    <img src="http://softwareninjaneer.com/images/audio-setup/SoundDialogSetCommunication.png" alt="Set the default communication device">
+</p>
+
+<p>Upon doing so a green phone icon will appear next to it. The final setup should resemble the image below.</p>
+<p class="text-center">
+    <img src="http://softwareninjaneer.com/images/audio-setup/SoundDialogResult.png" alt="Different playback devices set to default and communications">
+</p>
+
+<p>That&#39;s it! With the above setup I can now leave my USB headset plugged in, and only use it when speaking to someone on Skype or attending an online presentation. In the meantime all my audio is coming from my external speakers.</p>
+<h3 id="controlling-other-sounds-when-placing-a-call">Controlling other sounds when placing a call</h3>
+<p>Windows 7 provides a neat feature that adjusts the sound from other devices when using the communications device. The feature is known as <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dd316773%28v=vs.85%29.aspx">ducking, or stream attenuation</a>. By default, I found that the volume was lowered by 80% when I initiated a Skype call. It&#39;s a reasonable default, but I prefer to completely mute all other sounds. To do so, bring up the Sound control panel again, select the <em>Communications</em> tab, then choose your desired option.</p>
+<p class="text-center">
+    <img src="http://softwareninjaneer.com/images/audio-setup/SoundDialogCommunicationsDucking.png" alt="Ducking (stream attenuation) options">
+</p></div>
+</article>
+
+<div class="social-buttons"><div class="hacker-news-submit-button service-button">
+	<a href="http://news.ycombinator.com/submit" class="hn-share-button" data-url="http://softwareninjaneer.com//posts/designating-different-audio-devices-for-playback-and-communication-on-windows-7">Vote on HN</a>
+	<script>
+		(function(d, t) {
+			var g = d.createElement(t),
+				s = d.getElementsByTagName(t)[0];
+				g.src = '//hnbutton.appspot.com/static/hn.min.js';
+			s.parentNode.insertBefore(g, s);
+		}(document, 'script'));
+	</script>
+</div><div class="reddit-submit-button service-button">
+	<script type="text/javascript" src="http://en.reddit.com/static/button/button1.js"></script>
+</div><div class="google-plus-one-button service-button">
+	<div class="g-plusone" data-size="medium" data-href="http%3A//softwareninjaneer.com//posts/designating-different-audio-devices-for-playback-and-communication-on-windows-7"></div>
+	<script>
+		(function() {
+			var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+			po.src = 'https://apis.google.com/js/plusone.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+		})();
+	</script>
+</div><div class="twitter-tweet-button service-button">
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="amageed" data-related="amageed">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div><div class="twitter-follow-button service-button">
+	<a href="https://twitter.com/amageed" class="twitter-follow-button" data-show-count="false">Follow @amageed</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div></div>
+
+<div id="disqus_thread"></div>
+<script>
+	(function(){
+		window.disqus_shortname = 'softwareninjaneer';
+		window.disqus_developer = '1';
+		window.disqus_url = 'http://softwareninjaneer.com//posts/designating-different-audio-devices-for-playback-and-communication-on-windows-7';
+		window.disqus_identifier = 'posts-designating-different-audio-devices-for-playback-and-communication-on-windows-7';
+		window.disqus_title = 'Designating different audio devices for playback and communication on Windows 7';
+		if ( window.DISQUS ) {
+			return DISQUS.reset({
+				reload: true,
+				config: function () {
+					this.page.identifier = window.disqus_identifier;
+					this.page.url = window.disqus_url;
+					this.page.title = window.disqus_title;
+				}
+			});
+		}
+		else {
+		  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		  dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+		  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		}
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+<footer>
+	
+	<section id="related">
+		<h3>Other Posts</h3>
+		<nav class="linklist">
+			
+				<li><span>Sun Nov 27 2011</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/enumerating-weakly-typed-collections-with-implicitly-typed-variables">Enumerating weakly typed collections with implicitly typed variables</a></li>
+			
+				<li><span>Thu Aug 02 2012</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/null-coalescing-operator-precedence">The C# null coalescing operator and when 2 + 3 = 2</a></li>
+			
+				<li><span>Wed Jan 11 2012</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/productivity-tip-delimiting-multiple-lines-with-your-ide">Productivity tip: delimiting multiple lines with your IDE</a></li>
+			
+				<li><span>Wed Sep 21 2011</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/regex-engine-updated-to-allow-timeouts-in-net-4-5">Regex engine updated to allow timeouts in .NET 4.5</a></li>
+			
+				<li><span>Mon Mar 05 2012</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/returning-classes-that-inherit-listt-using-a-generic-method">Returning classes that inherit List&lt;T&gt; using a generic method</a></li>
+			
+				<li><span>Sun Jun 23 2013</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/sharpkit-evaluation">Evaluating SharpKit - a C# to JavaScript converter</a></li>
+			
+				<li><span>Sun Sep 08 2013</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/writing-angularjs-controllers-coffeescript-classes">Writing AngularJS controllers with CoffeeScript classes</a></li>
+			
+		</nav>
+	</section>
+	
+</footer>
+		</section>
+
+		<!-- Footer -->
+		<footer>
+			<hr />
+			<div class="pull-left">
+				<p>&copy; <a href="pages/about">Ahmad Mageed</a> 2013</p>
+				<p>
+				<a href="http://stackoverflow.com/users/59111/ahmad-mageed"><img src="http://stackoverflow.com/users/flair/59111.png?theme=dark" width="208" height="58" alt="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers"></a>
+				</p>
+			</div>
+			<div class="pull-right">
+				<p><small>Disclaimer: The opinions expressed herein are my own personal opinions and do not represent my employer's view in any way</small></p>
+			</div>
+		</footer>
+	</div><!-- /container -->
+
+	<!-- Scripts -->
+	<script >(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-25934924-1');
+ga('send', 'pageview');</script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script><script defer="defer"  src="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/js/bootstrap.min.js"></script><script defer="defer"  src="http://softwareninjaneer.com/scripts/script.js"></script>
+</body>
+</html>
