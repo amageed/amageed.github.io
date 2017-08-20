@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+	<!-- Use the .htaccess and remove these lines to avoid edge case issues.
+		 More info: h5bp.com/i/378 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<!-- Our site title and description -->
+	<title>Regex engine updated to allow timeouts in .NET 4.5 | Ahmad Mageed - Software Ninjaneer</title>
+	<meta name="description" content="Ahmad Mageed on software engineering, .NET, C#, JavaScript, Regex and technology in general." />
+	<meta name="keywords" content="software, engineering, development, regex, C#, JavaScript, AngularJS" />
+	<meta name="author" content="Ahmad Mageed" />
+
+	<!-- Output DocPad produced meta elements -->
+	<meta name="generator" content="DocPad v6.63.3" />
+
+	<!-- Mobile viewport optimized: h5bp.com/viewport -->
+	<meta name="viewport" content="width=device-width" />
+
+	<!-- Icons -->
+		<link rel="shortcut icon" href="http://softwareninjaneer.com/images/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/icons/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="images/icons/apple-touch-icon-57-precomposed.png">
+
+	<!-- Shims: IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script async src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link  rel="stylesheet" href="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/css/bootstrap.min.css" /><link  rel="stylesheet" href="http://softwareninjaneer.com/styles/style.css" />
+</head>
+<body>
+	<!-- Menu -->
+	<div class="navbar navbar-inverse navbar-static-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="http://softwareninjaneer.com/"><img src="http://softwareninjaneer.com/images/snlogo.png"></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/blog"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/blog/" property="dc:title">
+								Blog Posts
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/regextra"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/regextra/" property="dc:title">
+								Regextra Project
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/pages/about"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/pages/about/" property="dc:title">
+								About Ahmad
+							</a>
+						</li>
+					
+				</ul>
+			</div><!--/.navbar-collapse -->
+		</div>
+	</div>
+
+	<!-- Content -->
+	<div class="container">
+		<!-- Content -->
+		<section id="content" class="content">
+			<article id="post" class="post">
+	<h1>Regex engine updated to allow timeouts in .NET 4.5</h1>
+	<div class="post-date">Tuesday, September 20, 2011</div>
+	<div class="post-content"><p>Many new features were listed as part of <a href="http://msdn.microsoft.com/en-us/library/ms171868%28v=vs.110%29.aspx">what&#39;s new in the .NET Framework 4.5 Developer Preview</a>, but the one that caught my eye was this Regex engine update:</p>
+<blockquote>
+<p><em>Ability to limit how long the regular expression engine will attempt to resolve a regular expression before it times out.</em></p>
+</blockquote>
+<p>Eager to try this feature out I installed the <a href="http://www.microsoft.com/download/en/details.aspx?displaylang=en&amp;id=27543">Visual Studio 11 Developer Preview</a>. For what it&#39;s worth, I initially setup the Windows 8 Developer Preview in VirtualBox and played with Visual Studio 11 there, but that&#39;s not necessary. I later installed the VS 11 Developer Preview on my machine and it behaved nicely as a side by side install with VS 2010.</p>
+<p>At the time of this writing this post refers to the .NET Framework 4.5 Developer Preview. The current MSDN documentation about this new feature can be found <a href="http://msdn.microsoft.com/en-us/library/c75he57e%28v=VS.110%29.aspx">here</a>. Should the implementation change in the RTM version I will try to update this post accordingly.</p>
+<h2 id="why-is-this-feature-helpful-">Why is this feature helpful?</h2>
+<p>If you&#39;ve written a few regular expressions the chances are you&#39;ve encountered a pattern that caused the regex engine to take a lengthy amount of time to complete. Some might even claim that the engine hangs and they aren&#39;t going to wait around to find out if a match is finally returned. Despite the excessive processing time you may have wound up with the correct result. However, the time spent may not be acceptable for your application.</p>
+<p>Here are a few scenarios where poor regex performance may occur:</p>
+<ul>
+<li><p>Accepting user supplied input to perform a search on data.</p>
+</li>
+<li><p>Accepting user supplied regex patterns to search data.</p>
+</li>
+<li><p>Working with large string inputs.</p>
+</li>
+<li><p>Using patterns that suffer from excessive backtracking, back-references, and other factors.</p>
+</li>
+</ul>
+<h3 id="the-old-way-of-terminating-the-matching-process">The old way of terminating the matching process</h3>
+<p>Imagine providing a web service that allows people to supply regex patterns to test them against their desired data. How do you prevent someone from maliciously - or accidentally - bringing down your service with a poor pattern? To address this concern developers would need to handle the regex task asynchronously, measure the amount of time elapsed, and abandon the task if it exceeds a reasonable period of time.</p>
+<p>Wouldn&#39;t it be great if some timeout mechanism was built-in? Well, now we have just that! This feature addresses <a href="http://connect.microsoft.com/VisualStudio/feedback/details/259625/regular-expression-regex-improvements-timeout-pattern-tester">Connect feedback</a> from 2007 and it&#39;s great to see Microsoft continue to improve the regex engine.</p>
+<h2 id="show-me-what-s-new-already-">Show me what&#39;s new already!</h2>
+<p>Alright! First I&#39;ll cover the new pieces of the <em>Regex</em> class, then I&#39;ll demonstrate with some code.</p>
+<p>The .NET 4.5 <em>Regex</em> class has been updated to include:</p>
+<ul>
+<li><p>New overloaded constructors that accept a <strong><em>matchTimeout</em></strong> parameter of type <em>TimeSpan</em>. This applies to both instances of the <em>Regex</em> class and static usage of the class. If a timeout isn&#39;t specified it will default to the application-wide default timeout value, if set, or the <strong><em>InfiniteMatchTimeout</em></strong> value otherwise.</p>
+</li>
+<li><p>Support for an application-wide default timeout value specified by setting the <strong>&quot;REGEX_DEFAULT_MATCH_TIMEOUT&quot;</strong> property via the <a href="http://msdn.microsoft.com/en-us/library/system.appdomain.setdata%28v=VS.110%29.aspx"><strong>AppDomain.SetData</strong></a> method.</p>
+</li>
+<li><p>A static <strong><a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.infinitematchtimeout%28v=VS.110%29.aspx"><em>InfiniteMatchTimeout</em></a></strong> field member (<em>TimeSpan</em>) which indicates that a pattern matching operation shouldn&#39;t time out.</p>
+</li>
+<li><p>A <strong><em>MatchTimeout</em></strong> property (<em>TimeSpan</em>) representing the time-out interval of the current instance. When using the static methods this property can be accessed by handling the <em>RegexMatchTimeoutException</em>.</p>
+</li>
+</ul>
+<p>Should the <em><strong>matchTimeout</strong></em> be exceeded, or invalid, the following exceptions will be thrown with the given messages:</p>
+<ul>
+<li><p><a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regexmatchtimeoutexception%28v=VS.110%29.aspx"><em><strong>RegexMatchTimeoutException</strong></em></a>: this exception is thrown when a timeout occurs. The message reads, &quot;The RegEx engine has timed out while trying to match a pattern to an input string. This can occur for many reasons, including very large inputs or excessive backtracking caused by nested quantifiers, back-references and other factors.&quot;</p>
+</li>
+<li><p><em><strong>ArgumentOutOfRangeException</strong></em>: according to the class&#39; metadata this is thrown when &quot;<em><strong>options</strong></em> is not a valid <em><strong>RegexOptions</strong></em> value&quot; or when <em>&quot;</em><strong><em>matchTimeout</em></strong> is negative or greater than approximately 24 days.&quot; The latter part is what&#39;s new. Although it wasn&#39;t mentioned explicitly, I found that a value of zero is also considered invalid, which should come as no surprise.</p>
+</li>
+</ul>
+<p>Being aware of these two exceptions will be useful when working with the new feature. In addition, handling the <a href="http://msdn.microsoft.com/en-us/library/system.typeinitializationexception.aspx"><strong>TypeInitializationException</strong></a> is useful when using the application-wide timeout default. I&#39;ll demonstrate all of this in the subsequent sections that follow.</p>
+<h3 id="introducing-a-poor-pattern">Introducing a poor pattern</h3>
+<p>Consider this pattern: <strong><code>([a-z ]+)*!</code></strong></p>
+<p>This is a poor pattern with nested quantifiers that will cause excessive backtracking. It specifies a group that should be matched zero or more times (i.e., optional). The group contains a character class to match lowercase alphabets or the space character, one or more times. Finally, an exclamation mark should be matched.</p>
+<p>Now, consider this input: <em>&quot;The quick brown fox jumps&quot;</em></p>
+<p>When I tested the pattern with this input it took an average of 11 seconds to process. I tried using <a href="http://en.wikipedia.org/wiki/The_quick_brown_fox_jumps_over_the_lazy_dog">the full pangram</a> but it took way too long, so I stopped at the word &quot;jumps&quot; to get an idea of the processing time. As the string grows so will the time needed for the engine to complete it&#39;s pattern matching attempt. This pattern has an exponential complexity of O(2n).</p>
+<p>If you&#39;re interested in the details of what makes this a poor pattern read up on <a href="http://www.regular-expressions.info/catastrophic.html">catastrophic backtracking</a>.</p>
+<p>The code for the above pattern and input looks like this:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"The quick brown fox jumps"</span>;
+<span class="hljs-keyword">string</span> pattern = <span class="hljs-string">@"([a-z ]+)*!"</span>;
+<span class="hljs-keyword">bool</span> result = Regex.IsMatch(input, pattern);
+</code></pre>
+<p>Try it out. I&#39;ll wait! Then try it with a longer input and continue reading this post. I suspect it&#39;ll still be running long after you&#39;re done reading.</p>
+<h3 id="limiting-processing-time-with-the-matchtimeout-parameter">Limiting processing time with the matchTimeout parameter</h3>
+<p>Let&#39;s update the code to make it timeout after 4 seconds:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"The quick brown fox jumps over the lazy dog."</span>;
+<span class="hljs-keyword">string</span> pattern = <span class="hljs-string">@"([a-z ]+)*!"</span>;
+<span class="hljs-keyword">var</span> matchTimeout = TimeSpan.FromSeconds(<span class="hljs-number">4</span>);
+<span class="hljs-keyword">try</span>
+{
+    <span class="hljs-keyword">bool</span> result = Regex.IsMatch(input, pattern,
+                                RegexOptions.None,
+                                matchTimeout);
+}
+<span class="hljs-keyword">catch</span> (RegexMatchTimeoutException ex)
+{
+    <span class="hljs-comment">// handle exception</span>
+    Console.WriteLine(<span class="hljs-string">"Match timed out!"</span>);
+    Console.WriteLine(<span class="hljs-string">"- Timeout interval specified: "</span> + ex.MatchTimeout);
+    Console.WriteLine(<span class="hljs-string">"- Pattern: "</span> + ex.Pattern);
+    Console.WriteLine(<span class="hljs-string">"- Input: "</span> + ex.Input);
+}
+
+<span class="hljs-comment">/* Output:
+Match timed out!
+- Timeout interval specified: 00:00:04
+- Pattern: ([a-z ]+)*!
+- Input: The quick brown fox jumps over the lazy dog.
+*/</span>
+</code></pre>
+<p>That&#39;s all there is to it! Now the regex engine will give up and throw an exception if 4 seconds elapse. Also notice the helpful properties accessible from the <em>RegexMatchTimeoutException</em> object.</p>
+<h3 id="checking-the-specified-duration-with-the-matchtimeout-property">Checking the specified duration with the MatchTimeout property</h3>
+<p>When using an instance of the <em>Regex</em> class you have access to the <em>MatchTimeout</em> property. In the following example I&#39;ll use a <em>StopWatch</em> and compare the time taken to match a new sentence.</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"The English alphabet has 26 letters"</span>;
+<span class="hljs-keyword">string</span> pattern = <span class="hljs-string">@"\d+"</span>;
+<span class="hljs-keyword">var</span> matchTimeout = TimeSpan.FromMilliseconds(<span class="hljs-number">10</span>);
+<span class="hljs-keyword">var</span> sw = Stopwatch.StartNew();
+<span class="hljs-keyword">try</span>
+{
+    <span class="hljs-keyword">var</span> re = <span class="hljs-keyword">new</span> Regex(pattern, RegexOptions.None, matchTimeout);
+    <span class="hljs-keyword">bool</span> result = re.IsMatch(input);
+    sw.Stop();
+
+    Console.WriteLine(<span class="hljs-string">"Completed match in: "</span> + sw.Elapsed);
+    Console.WriteLine(<span class="hljs-string">"MatchTimeout specified: "</span> + re.MatchTimeout);
+    Console.WriteLine(<span class="hljs-string">"Matched with {0} to spare!"</span>,
+                         re.MatchTimeout.Subtract(sw.Elapsed));
+}
+<span class="hljs-keyword">catch</span> (RegexMatchTimeoutException ex)
+{
+    sw.Stop();
+    Console.WriteLine(ex.Message);
+}
+
+<span class="hljs-comment">/* Output:
+Completed match in: 00:00:00.0007495
+MatchTimeout specified: 00:00:00.0100000
+Matched with 00:00:00.0092505 to spare!
+*/</span>
+</code></pre>
+<h3 id="handling-invalid-matchtimeout-durations">Handling invalid matchTimeout durations</h3>
+<p>What happens when we specify an invalid <em>matchTimeout</em> value? As mentioned earlier, an <em>ArgumentOutOfRangeException</em> will be thrown when <em>matchTimeout</em> is either:</p>
+<ul>
+<li><p>Negative (see my comments on <em>Regex.InfiniteMatchTimeout</em> next for an exception to the rule)</p>
+</li>
+<li><p>Zero</p>
+</li>
+<li><p>Greater than approximately 24 days</p>
+</li>
+</ul>
+<p>To see this in action, let&#39;s use the last case. I&#39;m not sure how Microsoft decided on the ~24 day limit, but if you have a regex taking days to process I would question whether you&#39;re using the right tool for the job.</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"The quick brown fox jumps over the lazy dog."</span>;
+<span class="hljs-keyword">string</span> pattern = <span class="hljs-string">@"([a-z ]+)*!"</span>;
+
+<span class="hljs-comment">// invalid timeout of 25 days</span>
+<span class="hljs-keyword">var</span> matchTimeout = TimeSpan.FromDays(<span class="hljs-number">25</span>);
+<span class="hljs-keyword">try</span>
+{
+    <span class="hljs-keyword">var</span> re = <span class="hljs-keyword">new</span> Regex(pattern, RegexOptions.None, matchTimeout);
+    <span class="hljs-keyword">bool</span> result = re.IsMatch(input);
+}
+<span class="hljs-keyword">catch</span> (ArgumentOutOfRangeException ex)
+{
+    Console.WriteLine(ex.Message);
+}
+
+<span class="hljs-comment">/* Output:
+Specified argument was out of the range of valid values.
+Parameter name: matchTimeout
+*/</span>
+</code></pre>
+<h3 id="to-infinity-and-beyond-">To infinity... and beyond!</h3>
+<p>Oddly enough the <em>Regex.InfiniteMatchTimeout</em> field has a negative <em>TimeSpan</em> value of -00:00:00.0010000 (-1 ms) that, when passed as a <em>matchTimeout</em> parameter, doesn&#39;t cause the <em>ArgumentOutOfRangeException</em> to be thrown. Talk about being exceptional!</p>
+<p>So what exactly is its purpose? As stated earlier it&#39;s used as a default value that indicates a match should not timeout, which is essentially the original pre-.NET 4.5  behavior. It takes effect only when the application-wide default value isn&#39;t set. Thus, it&#39;s quite redundant to pass in as a parameter.</p>
+<p>To illustrate, these two regex instances share equivalent timeout values (when no application-wide default value is present):</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> pattern = <span class="hljs-string">@"\d+"</span>;
+<span class="hljs-keyword">var</span> re = <span class="hljs-keyword">new</span> Regex(pattern);
+<span class="hljs-keyword">var</span> reInfinite = <span class="hljs-keyword">new</span> Regex(pattern, RegexOptions.None, Regex.InfiniteMatchTimeout);
+Console.WriteLine(re.MatchTimeout == reInfinite.MatchTimeout);
+<span class="hljs-comment">// Output: True</span>
+</code></pre>
+<h2 id="application-wide-default-match-timeout">Application-wide default match timeout</h2>
+<p>To specify an application-wide default timeout value for all regex operations in an application domain you need to set the <strong>&quot;REGEX_DEFAULT_MATCH_TIMEOUT&quot;</strong> property. Any regex operation or instance declaration will then use the value assigned to that <em>AppDomain</em> property.</p>
+<h3 id="setting-the-appdomain-default-value">Setting the AppDomain default value</h3>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">string</span> input = <span class="hljs-string">"The quick brown fox jumps over the lazy dog."</span>;
+<span class="hljs-keyword">string</span> pattern = <span class="hljs-string">@"([a-z ]+)*!"</span>;
+
+<span class="hljs-comment">// AppDomain default set somewhere in your application</span>
+<span class="hljs-keyword">var</span> defaultMatchTimeout = TimeSpan.FromSeconds(<span class="hljs-number">2</span>);
+AppDomain.CurrentDomain.SetData(<span class="hljs-string">"REGEX_DEFAULT_MATCH_TIMEOUT"</span>,
+                                defaultMatchTimeout);
+
+<span class="hljs-comment">// regex use elsewhere...</span>
+<span class="hljs-keyword">var</span> sw = Stopwatch.StartNew();
+<span class="hljs-keyword">try</span>
+{
+    <span class="hljs-keyword">bool</span> result = Regex.IsMatch(input, pattern);
+    sw.Stop();
+}
+<span class="hljs-keyword">catch</span> (RegexMatchTimeoutException ex)
+{
+    sw.Stop();
+    Console.WriteLine(<span class="hljs-string">"Match timed out!"</span>);
+    Console.WriteLine(<span class="hljs-string">"Applied Default: "</span> + ex.MatchTimeout);
+}
+<span class="hljs-keyword">catch</span> (ArgumentOutOfRangeException ex)
+{
+    sw.Stop();
+}
+<span class="hljs-keyword">catch</span> (TypeInitializationException ex)
+{
+    sw.Stop();
+    Console.WriteLine(<span class="hljs-string">"TypeInitializationException: "</span> + ex.Message);
+    Console.WriteLine(<span class="hljs-string">"InnerException: {0} - {1}"</span>,
+        ex.InnerException.GetType().Name, ex.InnerException.Message);
+}
+
+Console.WriteLine(<span class="hljs-string">"AppDomain Default: {0}"</span>,
+    AppDomain.CurrentDomain.GetData(<span class="hljs-string">"REGEX_DEFAULT_MATCH_TIMEOUT"</span>));
+Console.WriteLine(<span class="hljs-string">"Stopwatch: "</span> + sw.Elapsed);
+</code></pre>
+<p>Woah! What&#39;s with all that code?! Most of the code is clear. A default value is set in the <em>AppDomain</em> somewhere in your application. Then a regex operation is used without specifying a <em>matchTimeout</em> value and the RegexMatchTimeoutException will be thrown. When the exception is caught it prints out the applied <em>MatchTimeout</em>, which should be the 2 seconds specified for the <em>AppDomain</em> property. Finally the <em>AppDomain</em> property is displayed, along with the elapsed <em>Stopwatch</em> time. The output should be similar to this:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-comment">/* Output:
+Match timed out!
+Applied Default: 00:00:02
+AppDomain Default: 00:00:02
+Stopwatch: 00:00:02.0322906
+*/</span>
+</code></pre>
+<p>Next, notice the catch block that handles the <em>TypeInitializationException</em>. Re-run the code but this time use a negative (invalid) value for the <em>defaultMatchTimeout</em> variable. When the <em>AppDomain</em> property is invalid the <em>Regex</em> class throws this type of exception and the output of the code above then resembles this:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-comment">/* Output:
+TypeInitializationException: The type initializer for
+'System.Text.RegularExpressions.Regex' threw an exception.
+InnerException: ArgumentOutOfRangeException - Specified argument was out of the
+range of valid values.
+Parameter name: AppDomain data 'REGEX_DEFAULT_MATCH_TIMEOUT' contains an invalid
+value or object for specifying a default matching timeout for
+System.Text.RegularExpressions.Regex.
+AppDomain Default: -00:00:02
+Stopwatch: 00:00:00.0550294
+*/</span>
+</code></pre>
+<h3 id="overriding-the-appdomain-default-value">Overriding the AppDomain default value</h3>
+<p>While you may want to use the application-wide default value in most cases, there are times when you want certain regex operations to use different values. Overriding the <em>AppDomain</em> default is as easy as specifying the <em>matchTimeout</em> parameter.</p>
+<p>For example:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> defaultMatchTimeout = TimeSpan.FromSeconds(<span class="hljs-number">5</span>);
+AppDomain.CurrentDomain.SetData(<span class="hljs-string">"REGEX_DEFAULT_MATCH_TIMEOUT"</span>,
+                                defaultMatchTimeout);
+
+<span class="hljs-keyword">string</span> input = <span class="hljs-string">"The quick brown fox jumps over the lazy dog."</span>;
+<span class="hljs-keyword">string</span> pattern = <span class="hljs-string">@"([a-z ]+)*!"</span>;
+
+<span class="hljs-keyword">var</span> sw = Stopwatch.StartNew();
+<span class="hljs-keyword">try</span>
+{
+    <span class="hljs-keyword">var</span> matchTimeout = TimeSpan.FromSeconds(<span class="hljs-number">2</span>);
+    <span class="hljs-keyword">bool</span> result = Regex.IsMatch(input, pattern, RegexOptions.None, matchTimeout);
+    sw.Stop();
+}
+<span class="hljs-keyword">catch</span> (RegexMatchTimeoutException ex)
+{
+    sw.Stop();
+    Console.WriteLine(<span class="hljs-string">"Match timed out!"</span>);
+    Console.WriteLine(<span class="hljs-string">"Applied Default: "</span> + ex.MatchTimeout);
+}
+
+Console.WriteLine(<span class="hljs-string">"AppDomain Default: {0}"</span>,
+    AppDomain.CurrentDomain.GetData(<span class="hljs-string">"REGEX_DEFAULT_MATCH_TIMEOUT"</span>));
+Console.WriteLine(<span class="hljs-string">"Stopwatch: "</span> + sw.Elapsed);
+
+<span class="hljs-comment">/* Output:
+Match timed out!
+Applied Default: 00:00:02
+AppDomain Default: 00:00:05
+Stopwatch: 00:00:02.0256260
+*/</span>
+</code></pre>
+<h2 id="recognizing-the-underlying-issues">Recognizing the underlying issues</h2>
+<p>While this new feature is great, it&#39;s important to be cognizant of the underlying issues. Look back at the reasons listed for poor regex performance and ponder over them.</p>
+<p>I think this feature is ideal for people who are writing services or features that accept user input. It&#39;s now a breeze to put an end to potentially rampant patterns. A reasonable timeout duration could be set, or it may even be dynamically assigned based on upfront checks of pattern length and input length for flexibility.</p>
+<p>That said, if you&#39;re the author of poorly performing patterns then using this as a crutch to fall back on isn&#39;t acceptable. Simply put, take regular expressions seriously and learn to write better patterns by understanding the shortcomings and characteristics of bad patterns.</p>
+<h2 id="conclusion-default-values-existing-regex-utilization-and-guidance">Conclusion: Default values, existing Regex utilization and guidance</h2>
+<p>By default the <em>Regex</em> class will not timeout. So what should we do about previous uses of <em>Regex</em> in our projects, if anything? The <a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex%28v=VS.110%29.aspx">MSDN documentation</a> states:</p>
+<blockquote>
+<p>We recommend that you set a time-out value in all regular expression pattern-matching operations. For more information, see <a href="http://msdn.microsoft.com/en-us/library/gg578045%28v=VS.110%29.aspx">Best Practices for Regular Expressions in the .NET Framework</a>.</p>
+</blockquote>
+<p>I have some reservations about doing that all the time. I suggest leaving them alone, for the most part. There&#39;s no need to hunt down all your regular expressions just to assign a timeout duration to them. That would entail identifying their current performance in order to avoid setting low timeout durations that would cause them to fail. Instead, focus on the patterns with poor performance, time critical usages, or areas where user input is used. If you&#39;re aware of problem areas, then by all means apply the <em>matchTimeout</em> to them individually after determining reasonable timeout limits.</p>
+<p>I would caution against specifying an <em>AppDomain</em> level default timeout and walking away. Again, knowing your patterns and scenarios make a huge difference in what strategy to employ. An <em>AppDomain</em> default is appropriate when you want to set an absolute maximum timeout limit for all your <em>Regex</em> operations to prevent a pattern&#39;s performance from catching you by surprise. With that guard in place you should then identify any patterns you believe need more time and override those values directly. This could also present an opportunity to incorporate unit tests of your patterns to ensure timeouts occur within the expected interval, or that they pass successfully before the limit is reached.</p>
+<p>Bear in mind that you&#39;ll want to add exception handling too. Handle the <em>RegexMatchTimeoutException</em> to cover timeouts, and handle the <em>ArgumentOutOfRangeException</em> when dynamically applying a <em>matchTimeout</em> value.</p>
+<p>Despite the addition of this feature, most operations execute fairly quickly, usually in the milliseconds to early seconds range. When determining reasonable timeout intervals the <a href="http://msdn.microsoft.com/en-us/library/system.text.regularexpressions.regex.matchtimeout%28v=vs.110%29.aspx">MSDN documentation</a> suggests taking the following factors into consideration:</p>
+<blockquote>
+<ul>
+<li>The length and complexity of the regular expression pattern. Longer and more complex regular expressions require more time than shorter and simpler ones.</li>
+<li>The expected machine load. Processing takes more time on systems with high CPU and memory utilization.</li>
+</ul>
+</blockquote>
+<p>To add to that advice, the length of the input is another factor to consider.</p>
+<p>Overall I&#39;m pleased with the addition of this feature and think it provides a simple approach to managing performance concerns without the need of writing ugly workarounds to address application responsiveness.</p>
+</div>
+</article>
+
+<div class="social-buttons"><div class="hacker-news-submit-button service-button">
+	<a href="http://news.ycombinator.com/submit" class="hn-share-button" data-url="http://softwareninjaneer.com/blog/regex-engine-updated-to-allow-timeouts-in-net-4-5">Vote on HN</a>
+	<script>
+		(function(d, t) {
+			var g = d.createElement(t),
+				s = d.getElementsByTagName(t)[0];
+				g.src = '//hnbutton.appspot.com/static/hn.min.js';
+			s.parentNode.insertBefore(g, s);
+		}(document, 'script'));
+	</script>
+</div><div class="reddit-submit-button service-button">
+	<script type="text/javascript" src="http://en.reddit.com/static/button/button1.js"></script>
+</div><div class="google-plus-one-button service-button">
+	<div class="g-plusone" data-size="medium" data-href="http%3A//softwareninjaneer.com/blog/regex-engine-updated-to-allow-timeouts-in-net-4-5"></div>
+	<script>
+		(function() {
+			var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+			po.src = 'https://apis.google.com/js/plusone.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+		})();
+	</script>
+</div><div class="twitter-tweet-button service-button">
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="amageed" data-related="amageed">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div><div class="twitter-follow-button service-button">
+	<a href="https://twitter.com/amageed" class="twitter-follow-button" data-show-count="false">Follow @amageed</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div></div>
+
+<div id="disqus_thread"></div>
+<script>
+	(function(){
+		window.disqus_shortname = 'softwareninjaneer';
+		window.disqus_developer = '1';
+		window.disqus_url = 'http://softwareninjaneer.com/blog/regex-engine-updated-to-allow-timeouts-in-net-4-5';
+		window.disqus_identifier = 'blog-regex-engine-updated-to-allow-timeouts-in-net-4-5';
+		window.disqus_title = 'Regex engine updated to allow timeouts in .NET 4.5';
+		if ( window.DISQUS ) {
+			return DISQUS.reset({
+				reload: true,
+				config: function () {
+					this.page.identifier = window.disqus_identifier;
+					this.page.url = window.disqus_url;
+					this.page.title = window.disqus_title;
+				}
+			});
+		}
+		else {
+		  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		  dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+		  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		}
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+<footer>
+	
+</footer>
+		</section>
+
+		<!-- Footer -->
+		<footer>
+			<hr />
+			<div class="pull-left">
+				<p>&copy; <a href="pages/about">Ahmad Mageed</a> 2017</p>
+				<p>
+				<a href="http://stackoverflow.com/users/59111/ahmad-mageed"><img src="http://stackoverflow.com/users/flair/59111.png?theme=dark" width="208" height="58" alt="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers"></a>
+				</p>
+			</div>
+			<div class="pull-right">
+				<p><small>Disclaimer: The opinions expressed herein are my own personal opinions and do not represent my employer's view in any way</small></p>
+			</div>
+		</footer>
+	</div><!-- /container -->
+
+	<!-- Scripts -->
+	<script >(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-25934924-1');
+ga('send', 'pageview');</script><script defer="defer"  src="http://softwareninjaneer.com/scripts/jquery.js"></script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script><script defer="defer"  src="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+	<!-- Use the .htaccess and remove these lines to avoid edge case issues.
+		 More info: h5bp.com/i/378 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<!-- Our site title and description -->
+	<title>Evaluating SharpKit - a C# to JavaScript converter | Ahmad Mageed - Software Ninjaneer</title>
+	<meta name="description" content="Ahmad Mageed on software engineering, .NET, C#, JavaScript, Regex and technology in general." />
+	<meta name="keywords" content="software, engineering, development, regex, C#, JavaScript, AngularJS" />
+	<meta name="author" content="Ahmad Mageed" />
+
+	<!-- Output DocPad produced meta elements -->
+	<meta name="generator" content="DocPad v6.54.10" />
+
+	<!-- Mobile viewport optimized: h5bp.com/viewport -->
+	<meta name="viewport" content="width=device-width" />
+
+	<!-- Icons -->
+		<link rel="shortcut icon" href="images/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/icons/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="images/icons/apple-touch-icon-57-precomposed.png">
+
+	<!-- Shims: IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script async src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link  rel="stylesheet" href="http://softwareninjaneer.com/styles/twitter-bootstrap.css" /><link  rel="stylesheet" href="http://softwareninjaneer.com/styles/style.css" />
+</head>
+<body>
+	<!-- Menu -->
+	<div class="navbar navbar-inverse navbar-static-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="http://softwareninjaneer.com/"><img src="http://softwareninjaneer.com/images/snlogo.png"></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/pages/posts"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/pages/posts" property="dc:title">
+								Posts
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/regextra"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/regextra" property="dc:title">
+								Regextra Project
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/pages/about"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/pages/about" property="dc:title">
+								About Ahmad
+							</a>
+						</li>
+					
+				</ul>
+			</div><!--/.navbar-collapse -->
+		</div>
+	</div>
+
+	<!-- Content -->
+	<div class="container">
+		<!-- Content -->
+		<section id="content" class="content">
+			<article id="post" class="post">
+	<h1>Evaluating SharpKit - a C# to JavaScript converter</h1>
+	<div class="post-date">Sunday, June 23, 2013</div>
+	<div class="post-content"><p>Recently the <a href="http://sharpkit.net/">SharpKit C# to JavaScript converter</a> was mentioned at work and I decided to evaluate it since a few coworkers thought it was interesting. What follows is my impression after using it briefly over the weekend.</p>
+<p>This type of tool isn&#39;t new; before this I was familiar with <a href="https://github.com/nikhilk/scriptsharp">Script#</a>. That said, SharpKit offers a <a href="http://sharpkit.net/Compare.aspx">comparison to other tools</a>. As you can imagine, being a C# to JavaScript converter, you have all the benefits of writing C# code in Visual Studio, which is a fantastic IDE. Add your favorite third-party productivity tool, such as CodeRush or Resharper, and it&#39;s even sweeter.</p>
+<p><a href="http://sharpkit.net/About.aspx">According to SharpKit</a>, they aim to address the challenge of JavaScript productivity:</p>
+<blockquote>
+<p>JavaScript code turned out to be very hard to maintain, mainly due to the fact that JavaScript’s interpreted nature does not allow IDEs such as Visual Studio to provide high productivity. For instance, Many C# features, such as syntax verification, code completion and refactoring, are simply not available while coding in JavaScript. On top of that, different JavaScript API implementations across web browsers made it even harder to evaluate code correctness during development.</p>
+</blockquote>
+<p>The aim of this post is to share the pros and cons of SharpKit as I see them. I will not be sharing much code or discussing the usage of SharpKit itself. To get a better idea of what SharpKit development is like, I recommend watching their <a href="http://sharpkit.net/Videos.aspx">videos</a>.</p>
+<p>I think it&#39;s important to state my background and the perspective with which I wrote this evaluation so anyone reading it understands some of my reasoning. I am comfortable with web development, and it shows in my evaluation. I enjoy working directly with JavaScript and the myriad of libraries and tools that come with front-end development. Moreover, I was considering some MV* frameworks for an upcoming project, namely <a href="http://backbonejs.org/">Backbone</a> and <a href="http://angularjs.org/">Angular</a>, so some of my comments mention them. That said, SharpKit is probably somebody&#39;s baby and I respect that they offer a solution to address a particular group of developers. I just don&#39;t count myself amongst them, and that&#39;s OK.</p>
+<h3 id="pros">Pros</h3>
+<ul>
+<li>Good for C# devs who aren&#39;t too familiar or comfortable with JavaScript</li>
+<li>Compile-time checking (everything is typed - could be a con, see below)</li>
+<li>Visual Studio Intellisense, third-party plugins, and debugging will all work with the C# code</li>
+<li>Support for LINQ / Reflection / Generics (comes at a cost though, see cons below)</li>
+<li>Support for most common libraries, like jQuery, jQueryUI</li>
+<li>Allows you to create header files to support libraries they don&#39;t support, so it&#39;s extensible</li>
+</ul>
+<h3 id="cons-and-some-general-observations-">Cons (and some general observations)</h3>
+<ul>
+<li>LINQ support comes at a cost. From the <a href="http://sharpkit.net/Faq.aspx">FAQ</a>:</li>
+</ul>
+<blockquote>
+<p>Advanced support for features such as reflection, LINQ and generics require a small include of the SharpKit JavaScript Kernel (about 60K compressed).</p>
+</blockquote>
+<p>I&#39;m not sure if they mean minified + gzipped by &quot;compressed&quot; or just minified. I minified + gzipped it and it came down to 25K, so it&#39;s not clear where that 60K comes from. While it&#39;s nice to have, it might not be needed if you&#39;re targeting modern browsers that support the common map/foreach functionality natively. For other LINQ type scenarios I would consider <a href="http://lodash.com/">Lo-Dash</a>, which has a smaller footprint (which can be enhanced by creating custom builds with your desired functionality). Alternately, there&#39;s <a href="http://underscorejs.org/">Underscore.js</a> and it weighs in at 14kb minified (4kb gzipped). If there&#39;s a real need for a faithful mirror of .NET LINQ, the <a href="http://linqjs.codeplex.com/">LinqJS project</a> weighs in at 6kb gzipped.</p>
+<ul>
+<li><p>Compile-time checking introduces additional casting to satisfy the static nature of C#. Example: after grabbing an element by ID, I need to cast it to the HTML element type (an input field, in this case) to access it&#39;s relevant properties...</p>
+<pre class="highlighted"><code class="cs">  <span class="keyword">var</span> input = document.getElementById(<span class="string">"input"</span>)
+                      .As&lt;SharpKit.Html.HtmlInputElement&gt;();
+  input.<span class="keyword">value</span> = <span class="string">"MyValue"</span>;</code></pre>
+</li>
+</ul>
+<p>If the input element changes to a <code>select</code> or <code>textarea</code>, I now have to change this code to cast it appropriately, although they both might be accessed by the same <code>value</code> property. In <a href="http://angularjs.org/">Angular</a> this is also a non-issue since the desired property would be bound to the model for us to access directly.</p>
+<ul>
+<li>I have to rely on a third party to update libraries (e.g., adopting a new jQuery/jQuery-UI/etc. release) or offer a particular library to begin with (Angular, Backbone).<ul>
+<li>Lacks support for Angular and Backbone. I suspect Angular support won&#39;t make it anytime soon, if at all, due to how different of a framework it is and how the dependency injection is determined. If it were supported, the amount of nested callbacks and delegates would look nothing like today&#39;s JavaScript that&#39;s contained in one spot and easier to read.</li>
+<li>I can&#39;t use the JavaScript components of the Bootstrap CSS framework (or Zurb Foundation) since no SharpKit library exists for them.</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>To work around the lack of support for any library, there are 2 solutions:<ol>
+<li>Write our own SharpKit header files for the libraries. This means reading the JavaScript source code and determining which of the classes and members are required, creating an empty implementation, then decorating them with a <code>JsTypeAttribute</code> in the proper mode, and preventing the classes from being exported. This might be a pro, since I can support libraries, but it&#39;s extra work whenever I need something.</li>
+<li>A hybrid approach using SharpKit + JavaScript. For example, I&#39;d write JavaScript directly, leveraging Bootstrap JavaScript functionality normally (since there&#39;s no SharpKit equivalent), then bring in any SharpKit generated JavaScript as modules (i.e., using RequireJS or CommonJS). So I&#39;m back to writing JavaScript anyway and now I&#39;m maintaining an awkward hybrid approach.</li>
+</ol>
+</li>
+</ul>
+<ul>
+<li><p>Devs that are comfortable with JavaScript are penalized and can&#39;t leverage their knowledge or much of the power of dynamic languages since they would have to play by the static world&#39;s rules (example below).</p>
+<ul>
+<li><p>Lose out on the dynamic nature of JavaScript (depending on who you are, that might be a pro). To me this is a loss since a very common JavaScript pattern is to access an object&#39;s property via key lookup using strings and usually a concatenated string, making it somewhat comparable to generics in C#.</p>
+<p><strong>JavaScript:</strong> <code>console.log(person[&quot;Name&quot;]);</code></p>
+<p><strong>SharpKit (w/reflection):</strong></p>
+<pre class="highlighted"><code class="cs"><span class="keyword">foreach</span> (<span class="keyword">var</span> prop <span class="keyword">in</span> person.GetType().GetProperties())
+{
+    console.log(prop.GetValue(person, <span class="keyword">null</span>));
+}</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<p>And that will likely generate some interesting looking code and require that 60kb library. I couldn&#39;t get this to compile, although they seem to support it. An <code>ExpandoObject</code> might do the trick, but that didn&#39;t compile for me either. I&#39;m probably missing some setting to access .NET classes.</p>
+<ul>
+<li>Introduces dev / build workflow challenges. I can&#39;t edit a .cs file in Visual Studio while debugging to update the generated JavaScript. We&#39;d need to stop debugging, edit, start debugging / launch the site. That&#39;s a step back in productivity. With a JavaScript approach (including CoffeeScript and TypeScript) tools exist to compile changes on the fly, so the workflow is much nicer: edit JS/CS/TS file, a tool watches for changes and compiles them on the fly, a tool also reloads your browser automatically. There&#39;s no stop/edit/start since VS isn&#39;t in the way; it&#39;s just edit/save and the tools take care of the rest.</li>
+<li>No support for Jasmine or Angular&#39;s additions (meaning I would have to test in JavaScript, which was the original plan anyway). SharpKit supports QUnit.</li>
+</ul>
+<h3 id="other-issues">Other issues</h3>
+<p>This library should work in Visual Studio 2012, and forums online support that it&#39;s just a library to be reference. However, I installed it and the project template only showed up for VS 2010, not VS 2012. I had to ignore the project template and manually import the SharpKit reference since there was no MVC template. Given an existing project, you would want to import the reference by adding it to the .csproj file. I got it to work with VS 2010.</p>
+<p>In VS 2012 I manually imported the references. All looked well, but upon compiling and launching the site, the JavaScript file wasn&#39;t generated. The same exact setup worked in VS 2010 though. Might be a fluke... uninstalled/reinstalled without a difference in the end result though.</p>
+<h3 id="closing-thoughts">Closing thoughts</h3>
+<p>I can see the allure of a tool like SharpKit for devs that would prefer this type of environment who want to be productive with C# and aren&#39;t concerned with a couple of things, such as client-side script size / performance, and the stop and go workflow impediment since that&#39;s how they typically work with C# / ASP.NET MVC anyway. Given the cons mentioned, I feel it&#39;s more suited for projects relying on the supported libraries, and by people that might not have a need to use the libraries I&#39;m interested in - people that aren&#39;t accustomed to front-end dev. It&#39;s also additional work to produce and update custom header files.</p>
+<p>I would rather embrace a real front-end workflow that keeps me in sync with the front-end community today, and embrace the dynamic nature of JavaScript. CoffeeScript and TypeScript are transpilers that still retain dynamic support and don&#39;t take that away. SharpKit is more of a library that abstracts that nature away to provide a wrapper with its own classes and work within C#&#39;s static nature.</p>
+<p>This reminds me of Web Forms all over again. What I enjoy about ASP.NET MVC is that it allows me to get closer to the metal, avoid abstractions, and enhance my front-end skills. That would all go away by adopting SharpKit&#39;s approach and feels like a step backwards. It would also single-handedly eliminate the entire front-end stack I have in mind and I don&#39;t think a tool should wield so much power over technical decisions and dictate what I can and cannot use.</p>
+<p>I only spent a weekend evaluating this library, so I&#39;m sure I missed some features or might have made a mistaken assumption along the way. Overall, I think I got the gist of working with it and it&#39;s not for me. I&#39;m comfortable developing and debugging JavaScript. I mainly use Sublime Text as my IDE for front-end development, and I can setup a JS linter if I&#39;m concerned with catching JS gotchas. If I wanted to work with a more static aware flavor of JavaScript, I would consider <a href="http://www.typescriptlang.org/">TypeScript</a>.</p>
+</div>
+</article>
+
+<div class="social-buttons"><div class="hacker-news-submit-button service-button">
+	<a href="http://news.ycombinator.com/submit" class="hn-share-button" data-url="http://softwareninjaneer.com//posts/sharpkit-evaluation">Vote on HN</a>
+	<script>
+		(function(d, t) {
+			var g = d.createElement(t),
+				s = d.getElementsByTagName(t)[0];
+				g.src = '//hnbutton.appspot.com/static/hn.min.js';
+			s.parentNode.insertBefore(g, s);
+		}(document, 'script'));
+	</script>
+</div><div class="reddit-submit-button service-button">
+	<script type="text/javascript" src="http://en.reddit.com/static/button/button1.js"></script>
+</div><div class="google-plus-one-button service-button">
+	<div class="g-plusone" data-size="medium" data-href="http%3A//softwareninjaneer.com//posts/sharpkit-evaluation"></div>
+	<script>
+		(function() {
+			var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+			po.src = 'https://apis.google.com/js/plusone.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+		})();
+	</script>
+</div><div class="twitter-tweet-button service-button">
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="amageed" data-related="amageed">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div><div class="twitter-follow-button service-button">
+	<a href="https://twitter.com/amageed" class="twitter-follow-button" data-show-count="false">Follow @amageed</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div></div>
+
+<div id="disqus_thread"></div>
+<script>
+	(function(){
+		window.disqus_shortname = 'softwareninjaneer';
+		window.disqus_developer = '1';
+		window.disqus_url = 'http://softwareninjaneer.com//posts/sharpkit-evaluation';
+		window.disqus_identifier = 'posts-sharpkit-evaluation';
+		window.disqus_title = 'Evaluating SharpKit - a C# to JavaScript converter';
+		if ( window.DISQUS ) {
+			return DISQUS.reset({
+				reload: true,
+				config: function () {
+					this.page.identifier = window.disqus_identifier;
+					this.page.url = window.disqus_url;
+					this.page.title = window.disqus_title;
+				}
+			});
+		}
+		else {
+		  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		  dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+		  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		}
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+<footer>
+	
+	<section id="related">
+		<h3>Other Posts</h3>
+		<nav class="linklist">
+			
+				<li><span>Sat Feb 25 2012</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/designating-different-audio-devices-for-playback-and-communication-on-windows-7">Designating different audio devices for playback and communication on Windows 7</a></li>
+			
+				<li><span>Sun Nov 27 2011</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/enumerating-weakly-typed-collections-with-implicitly-typed-variables">Enumerating weakly typed collections with implicitly typed variables</a></li>
+			
+				<li><span>Thu Aug 02 2012</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/null-coalescing-operator-precedence">The C# null coalescing operator and when 2 + 3 = 2</a></li>
+			
+				<li><span>Wed Jan 11 2012</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/productivity-tip-delimiting-multiple-lines-with-your-ide">Productivity tip: delimiting multiple lines with your IDE</a></li>
+			
+				<li><span>Wed Sep 21 2011</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/regex-engine-updated-to-allow-timeouts-in-net-4-5">Regex engine updated to allow timeouts in .NET 4.5</a></li>
+			
+				<li><span>Mon Mar 05 2012</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/returning-classes-that-inherit-listt-using-a-generic-method">Returning classes that inherit List&lt;T&gt; using a generic method</a></li>
+			
+				<li><span>Sun Sep 08 2013</span>
+				&raquo;
+				<a href="http://softwareninjaneer.com/posts/writing-angularjs-controllers-coffeescript-classes">Writing AngularJS controllers with CoffeeScript classes</a></li>
+			
+		</nav>
+	</section>
+	
+</footer>
+		</section>
+
+		<!-- Footer -->
+		<footer>
+			<hr />
+			<div class="pull-left">
+				<p>&copy; <a href="pages/about">Ahmad Mageed</a> 2013</p>
+				<p>
+				<a href="http://stackoverflow.com/users/59111/ahmad-mageed"><img src="http://stackoverflow.com/users/flair/59111.png?theme=dark" width="208" height="58" alt="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers"></a>
+				</p>
+			</div>
+			<div class="pull-right">
+				<p><small>Disclaimer: The opinions expressed herein are my own personal opinions and do not represent my employer's view in any way</small></p>
+			</div>
+		</footer>
+	</div><!-- /container -->
+
+	<!-- Scripts -->
+	<script >(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-25934924-1');
+ga('send', 'pageview');</script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script><script defer="defer"  src="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/js/bootstrap.min.js"></script><script defer="defer"  src="http://softwareninjaneer.com/scripts/script.js"></script>
+</body>
+</html>

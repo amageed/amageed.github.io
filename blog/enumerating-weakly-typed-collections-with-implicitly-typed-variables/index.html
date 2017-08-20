@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+	<!-- Use the .htaccess and remove these lines to avoid edge case issues.
+		 More info: h5bp.com/i/378 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<!-- Our site title and description -->
+	<title>Enumerating weakly typed collections with implicitly typed variables | Ahmad Mageed - Software Ninjaneer</title>
+	<meta name="description" content="Ahmad Mageed on software engineering, .NET, C#, JavaScript, Regex and technology in general." />
+	<meta name="keywords" content="software, engineering, development, regex, C#, JavaScript, AngularJS" />
+	<meta name="author" content="Ahmad Mageed" />
+
+	<!-- Output DocPad produced meta elements -->
+	<meta name="generator" content="DocPad v6.63.3" />
+
+	<!-- Mobile viewport optimized: h5bp.com/viewport -->
+	<meta name="viewport" content="width=device-width" />
+
+	<!-- Icons -->
+		<link rel="shortcut icon" href="http://softwareninjaneer.com/images/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/icons/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="images/icons/apple-touch-icon-57-precomposed.png">
+
+	<!-- Shims: IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script async src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link  rel="stylesheet" href="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/css/bootstrap.min.css" /><link  rel="stylesheet" href="http://softwareninjaneer.com/styles/style.css" />
+</head>
+<body>
+	<!-- Menu -->
+	<div class="navbar navbar-inverse navbar-static-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="http://softwareninjaneer.com/"><img src="http://softwareninjaneer.com/images/snlogo.png"></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/blog"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/blog/" property="dc:title">
+								Blog Posts
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/regextra"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/regextra/" property="dc:title">
+								Regextra Project
+							</a>
+						</li>
+					
+						<li
+							typeof="sioc:Page"
+							about="http://softwareninjaneer.com/pages/about"
+							class=""
+						>
+							<a href="http://softwareninjaneer.com/pages/about/" property="dc:title">
+								About Ahmad
+							</a>
+						</li>
+					
+				</ul>
+			</div><!--/.navbar-collapse -->
+		</div>
+	</div>
+
+	<!-- Content -->
+	<div class="container">
+		<!-- Content -->
+		<section id="content" class="content">
+			<article id="post" class="post">
+	<h1>Enumerating weakly typed collections with implicitly typed variables</h1>
+	<div class="post-date">Sunday, November 27, 2011</div>
+	<div class="post-content"><p>The advent of C# 3.0 introduced the ability to use implicitly typed local variables via the <a href="http://msdn.microsoft.com/en-us/library/bb383973.aspx"><code>var</code> keyword</a>. Usage of <code>var</code> has flourished since then, and while some people use it judiciously, others make liberal use of it. Ultimately, most people are bound to run into a scenario where it surprisingly ceases to behave properly. Suddenly using <code>var</code> in a foreach loop causes IntelliSense to stop working properly, and an error is generated upon compiling.</p>
+<p>The scenario I&#39;m referring to is enumerating over weakly typed collections. This is common when working with COM, Microsoft Office interop, an <code>ArrayList</code>, and any collection that returns a non-generic <code>IEnumerable</code> (i.e., an <code>IEnumerable&lt;object&gt;</code>).</p>
+<p>I&#39;ll use this simple <code>Car</code> class to demonstrate in the upcoming examples:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> Car
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Make { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Model { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">bool</span> IsHybrid { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-title">Car</span>(<span class="hljs-keyword">string</span> make, <span class="hljs-keyword">string</span> model, <span class="hljs-keyword">bool</span> isHybrid)
+    {
+        Make = make;
+        Model = model;
+        IsHybrid = isHybrid;
+    }
+}
+</code></pre>
+<p>Now, consider the following example:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> cars = <span class="hljs-keyword">new</span> ArrayList()
+{
+    <span class="hljs-keyword">new</span> Car(<span class="hljs-string">"BMW"</span>, <span class="hljs-string">"335i"</span>, <span class="hljs-keyword">false</span>),
+    <span class="hljs-keyword">new</span> Car(<span class="hljs-string">"Infiniti"</span>, <span class="hljs-string">"G37"</span>, <span class="hljs-keyword">false</span>),
+    <span class="hljs-keyword">new</span> Car(<span class="hljs-string">"Toyota"</span>, <span class="hljs-string">"Prius"</span>, <span class="hljs-keyword">true</span>)
+};
+
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> c <span class="hljs-keyword">in</span> cars)
+{
+    Console.WriteLine(c.Make);
+}
+</code></pre>
+<p>As I write the line inside the foreach loop, I immediately notice something fishy. When I type <code>&quot;c.&quot;</code> the IntelliSense suggestions pop up, but the properties on the <code>Car</code> class are missing! I expect to see <code>Make</code>, <code>Model</code>, and <code>IsHybrid</code> in the popup, but they are visibly absent. What gives?</p>
+<p class="text-center">
+    <img src="http://softwareninjaneer.com/images/CarNoIntelliSense.png" alt="Screenshot of IntelliSense and missing properties" title="Car object missing properties">
+    <p>Screenshot of IntelliSense and missing properties</p>
+</p>
+
+<p>Since <code>ArrayList</code> returns an <code>IEnumerable&lt;object&gt;</code> the usage of <code>var</code> results in the variable <code>c</code> being an <code>object</code> type. With this in mind, it makes sense that the only IntelliSense items available are the ones that are defined on all objects.</p>
+<p>Ignoring this early warning that something is amiss, attempting to compile the code would generate this error:</p>
+<blockquote>
+<p>&#39;object&#39; does not contain a definition for &#39;Make&#39; and no extension method &#39;Make&#39; accepting a first argument of type &#39;object&#39; could be found (are you missing a using directive or an assembly reference?)</p>
+</blockquote>
+<h3 id="workaround-1-be-explicit">Workaround #1: Be explicit</h3>
+<p>The most straightforward solution is to use an explicitly typed local variable. In this case, we would use <code>Car</code> instead of <code>var</code>. The updated code will make IntelliSense work as expected, and compiles correctly.</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">foreach</span> (Car c <span class="hljs-keyword">in</span> cars)
+{
+    Console.WriteLine(c.Make);
+}
+</code></pre>
+<p>So what&#39;s the difference and why does this approach work? Allow me to refer to the C# language specification in order to &quot;PhD things up,&quot; as one of my co-workers fondly enjoys accusing me of doing occasionally! Essentially, it works because an implicit cast is occurring within the foreach. Section 8.8.4 of the spec (version 4.0) details how the <code>foreach</code> statement determines the type when <code>var</code> is specified. A bunch of steps take place to determine the type, and they are beyond the scope of this post, however the relevant part of the spec that this falls under occurs when the compiler checks for an enumerable interface. In particular, the spec states:</p>
+<blockquote>
+<p>Otherwise, if there is an implicit conversion from X to the System.Collections.IEnumerable interface, then the collection type is this interface, the enumerator type is the interface System.Collections.IEnumerator, and the element type is object.</p>
+</blockquote>
+<p>The spec also shows the individual components of the <code>foreach</code> statement and its expansion, which clarifies how the casting occurs.</p>
+<h3 id="workaround-2-linq-to-the-rescue-">Workaround #2: LINQ to the rescue!</h3>
+<p>With LINQ we can use the <a href="http://msdn.microsoft.com/en-us/library/bb341406.aspx">Enumerable.Cast method</a> (or <a href="http://msdn.microsoft.com/en-us/library/bb360913.aspx">Enumerable.OfType</a>) to cast all the elements of the <code>IEnumerable</code> to a given type. In our case, we will specify a <code>Car</code> type and the result will be a strongly-typed <code>IEnumerable&lt;Car&gt;</code>.</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> c <span class="hljs-keyword">in</span> cars.Cast&lt;Car&gt;())
+{
+    Console.WriteLine(c.Make);
+}
+</code></pre>
+<p>The equivalent query syntax is:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> query = <span class="hljs-keyword">from</span> Car c <span class="hljs-keyword">in</span> cars
+            <span class="hljs-keyword">select</span> c;
+
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> c <span class="hljs-keyword">in</span> query)
+{
+    Console.WriteLine(c.Make);
+}
+</code></pre>
+<p>Notice that the range variable <code>c</code> is explicitly typed in the <a href="http://msdn.microsoft.com/en-us/library/bb383978.aspx">from clause</a> and omitting the type by writing <code>from c in cars</code> would have generated this compile-time error:</p>
+<blockquote>
+<p>Could not find an implementation of the query pattern for source type &#39;System.Collections.ArrayList&#39;.  &#39;Select&#39; not found.  Consider explicitly specifying the type of the range variable &#39;c&#39;.</p>
+</blockquote>
+<p>Normally, when working with data sources which implement IEnumerable<T>, we can omit the type since the compiler infers it.</p>
+<p>While the above approaches illustrate the point, the first workaround is the preferred way to deal with this issue unless we plan to do more with the LINQ query. The <code>Enumerable</code> methods are beneficial when constructing a larger LINQ query, allowing us to chain multiple extension methods together. Understanding how <a href="http://msdn.microsoft.com/en-us/library/bb383977.aspx">extension methods</a> work is vital to appreciate how this all fits together.</p>
+<p>In brief, <code>Enumerable.Cast</code> extends the <code>IEnumerable</code> type, which is why it is available for use on the <code>cars ArrayList</code>. The result is a strongly-typed <code>IEnumerable&lt;Car&gt;</code>. Since a large majority of extension methods extend <code>IEnumerable&lt;T&gt;</code>, we can begin to use them after using the <code>Cast</code> or <code>OfType</code> extension methods. Even <code>Enumerable.Select</code>, the most basic of extension methods, isn&#39;t available until one of the aforementioned extension methods is used.</p>
+<p>As an example of method chaining, the following query can be used to group hybrid and non-hybrid cars together:</p>
+<pre class="hljs"><code class="cs"><span class="hljs-keyword">var</span> hybridGroups = cars.Cast&lt;Car&gt;().GroupBy(c =&gt; c.IsHybrid);
+
+<span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> <span class="hljs-keyword">group</span> <span class="hljs-keyword">in</span> hybridGroups)
+{
+    Console.WriteLine(<span class="hljs-string">"{0} Cars: {1}"</span>,
+        <span class="hljs-keyword">group</span>.Key ? <span class="hljs-string">"Hybrid"</span> : <span class="hljs-string">"Non-Hybrid"</span>,
+        <span class="hljs-keyword">group</span>.Count());
+
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> c <span class="hljs-keyword">in</span> <span class="hljs-keyword">group</span>)
+    {
+        Console.WriteLine(<span class="hljs-string">"- {0} {1}"</span>, c.Make, c.Model);
+    }
+}
+</code></pre>
+</div>
+</article>
+
+<div class="social-buttons"><div class="hacker-news-submit-button service-button">
+	<a href="http://news.ycombinator.com/submit" class="hn-share-button" data-url="http://softwareninjaneer.com/blog/enumerating-weakly-typed-collections-with-implicitly-typed-variables">Vote on HN</a>
+	<script>
+		(function(d, t) {
+			var g = d.createElement(t),
+				s = d.getElementsByTagName(t)[0];
+				g.src = '//hnbutton.appspot.com/static/hn.min.js';
+			s.parentNode.insertBefore(g, s);
+		}(document, 'script'));
+	</script>
+</div><div class="reddit-submit-button service-button">
+	<script type="text/javascript" src="http://en.reddit.com/static/button/button1.js"></script>
+</div><div class="google-plus-one-button service-button">
+	<div class="g-plusone" data-size="medium" data-href="http%3A//softwareninjaneer.com/blog/enumerating-weakly-typed-collections-with-implicitly-typed-variables"></div>
+	<script>
+		(function() {
+			var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+			po.src = 'https://apis.google.com/js/plusone.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+		})();
+	</script>
+</div><div class="twitter-tweet-button service-button">
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="amageed" data-related="amageed">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div><div class="twitter-follow-button service-button">
+	<a href="https://twitter.com/amageed" class="twitter-follow-button" data-show-count="false">Follow @amageed</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div></div>
+
+<div id="disqus_thread"></div>
+<script>
+	(function(){
+		window.disqus_shortname = 'softwareninjaneer';
+		window.disqus_developer = '1';
+		window.disqus_url = 'http://softwareninjaneer.com/blog/enumerating-weakly-typed-collections-with-implicitly-typed-variables';
+		window.disqus_identifier = 'blog-enumerating-weakly-typed-collections-with-implicitly-typed-variables';
+		window.disqus_title = 'Enumerating weakly typed collections with implicitly typed variables';
+		if ( window.DISQUS ) {
+			return DISQUS.reset({
+				reload: true,
+				config: function () {
+					this.page.identifier = window.disqus_identifier;
+					this.page.url = window.disqus_url;
+					this.page.title = window.disqus_title;
+				}
+			});
+		}
+		else {
+		  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		  dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+		  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		}
+	})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+<footer>
+	
+</footer>
+		</section>
+
+		<!-- Footer -->
+		<footer>
+			<hr />
+			<div class="pull-left">
+				<p>&copy; <a href="pages/about">Ahmad Mageed</a> 2017</p>
+				<p>
+				<a href="http://stackoverflow.com/users/59111/ahmad-mageed"><img src="http://stackoverflow.com/users/flair/59111.png?theme=dark" width="208" height="58" alt="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Ahmad Mageed at Stack Overflow, Q&amp;A for professional and enthusiast programmers"></a>
+				</p>
+			</div>
+			<div class="pull-right">
+				<p><small>Disclaimer: The opinions expressed herein are my own personal opinions and do not represent my employer's view in any way</small></p>
+			</div>
+		</footer>
+	</div><!-- /container -->
+
+	<!-- Scripts -->
+	<script >(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-25934924-1');
+ga('send', 'pageview');</script><script defer="defer"  src="http://softwareninjaneer.com/scripts/jquery.js"></script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script><script defer="defer"  src="http://softwareninjaneer.com/vendor/twitter-bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

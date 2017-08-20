@@ -1,0 +1,724 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"isol",
+				"isolateScope"
+			],
+			[
+				"trigg",
+				"triggerHandler"
+			],
+			[
+				"has",
+				"hasClass"
+			],
+			[
+				"r",
+				"rootScope_"
+			],
+			[
+				"before",
+				"beforeEach"
+			],
+			[
+				"angu",
+				"angularjs"
+			],
+			[
+				"inp",
+				"inputTypes"
+			],
+			[
+				"el",
+				"element"
+			],
+			[
+				"Tal",
+				"TalkListView"
+			],
+			[
+				"name",
+				"namespace"
+			],
+			[
+				"contact",
+				"contact_form"
+			],
+			[
+				"res",
+				"resetField"
+			],
+			[
+				"Todo",
+				"TodoCtrl"
+			],
+			[
+				"Tod",
+				"TodoCtrl"
+			],
+			[
+				"To",
+				"TodoCtrl"
+			],
+			[
+				"inpu",
+				"inputEl"
+			],
+			[
+				"ex",
+				"exampleRow"
+			],
+			[
+				"top",
+				"top-right-rounded-corner"
+			],
+			[
+				"top-",
+				"top-left-rounded-corner"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/C/Users/Ahmad/Code/blog/docpad.coffee",
+			"settings":
+			{
+				"buffer_size": 4677,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "documents/regextra/index.html",
+			"settings":
+			{
+				"buffer_size": 19431,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "documents/blog/creating-an-angularjs-reset-field-directive.html.md",
+			"settings":
+			{
+				"buffer_size": 14493,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "documents/blog/enumerating-weakly-typed-collections-with-implicitly-typed-variables.html.md",
+			"settings":
+			{
+				"buffer_size": 6509,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 380.0,
+		"selected_items":
+		[
+			[
+				"packa",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: List Packages"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 512.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/Ahmad/Code/blog/src/documents/regextra/index.html.md",
+		"/C/Users/Ahmad/Code/blog/src/files/vendor/twitter-bootstrap/js/scrollspy.js",
+		"/C/Users/Ahmad/MinuteMenu/kids/ExternalReferences/repositories.config",
+		"/C/Users/Ahmad/MinuteMenu/kids/.bowerrc",
+		"/C/Users/Ahmad/MinuteMenu/kids/Projects/MinuteMenu.Kids.Web/packages.config",
+		"/C/Users/Ahmad/MinuteMenu/kids/Projects/MinuteMenu.Kids.Web2/packages.config",
+		"/C/Users/Ahmad/MinuteMenu/kids/.gitignore",
+		"/C/Users/Ahmad/MinuteMenu/kids/webbuild.config.js",
+		"/C/Users/Ahmad/MinuteMenu/kids/Projects/MinuteMenu.Kids.Web2/Web.config",
+		"/C/Users/Ahmad/MinuteMenu/kids/Projects/MinuteMenu.Kids.Web2/Web.Debug.config",
+		"/C/Users/Ahmad/MinuteMenu/kids/Projects/MinuteMenu.Kids.Web2/Web.Release.config",
+		"/C/Users/Ahmad/MinuteMenu/kids/Projects/MinuteMenu.Kids.Web/Web.config",
+		"/C/Users/Ahmad/MinuteMenu/kids/Projects/MinuteMenu.Kids.Web/Web.Debug.config",
+		"/C/Users/Ahmad/MinuteMenu/kids/Projects/MinuteMenu.Kids.Web/Web.Release.config",
+		"/C/Users/Ahmad/MinuteMenu/kids/Projects/MinuteMenu.Kids.Web2/Global.asax.cs",
+		"/C/Users/Ahmad/MinuteMenu/kids/webbuild.ps1",
+		"/C/Users/Ahmad/MinuteMenu/kids/nuget.config",
+		"/C/Users/Ahmad/Desktop/ng-conf notes.txt",
+		"/C/Users/Ahmad/Code/Angular-ResetField/src/resetField.spec.js",
+		"/C/Users/Ahmad/Code/Angular-ResetField/Gruntfile.js",
+		"/C/Users/Ahmad/Code/Angular-ResetField/src/resetField.js",
+		"/C/Users/Ahmad/Desktop/Minute Menu.rdp",
+		"/C/Users/Ahmad/Desktop/Minute Menu Copy-Paste.rdp",
+		"/C/Users/Ahmad/Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1",
+		"/C/Users/Ahmad/Code/Angular-ResetField/src/css/resetField.css",
+		"/C/Users/Ahmad/Code/Angular-ResetField/demo.html",
+		"/C/Users/Ahmad/Code/angular-resetfield/README.md",
+		"/C/Users/Ahmad/Code/Angular-ResetField/bower.json",
+		"/C/Users/Ahmad/Code/Angular-ResetField/package.json",
+		"/C/Users/Ahmad/Code/Angular-ResetField/src/readme.md",
+		"/C/Users/Ahmad/Code/blog/src/documents/blog/creating-an-angularjs-reset-field-directive.html.md",
+		"/C/Users/Ahmad/Code/blog/.gitignore",
+		"/C/Users/Ahmad/Code/Angular-ResetField/app.js",
+		"/C/Users/Ahmad/Code/Angular-ResetField/src/test/resetField.spec.js",
+		"/C/Users/Ahmad/Code/blog/src/documents/blog/creating-an-angularjs-field-reset-directive.html.md",
+		"/C/Users/Ahmad/Code/Angular-ResetField/reset.spec.js",
+		"/C/Users/Ahmad/Code/Angular-ResetField/resetField.js",
+		"/C/Users/Ahmad/Code/Angular-ResetField/index.html",
+		"/C/Users/Ahmad/Code/Angular-ResetField/font-awesome.css",
+		"/C/Users/Ahmad/Code/Angular-ResetField/animate.min.css",
+		"/C/Users/Ahmad/AppData/Roaming/Sublime Text 2/Packages/User/JavaScript.sublime-settings",
+		"/C/Users/Ahmad/AppData/Local/Microsoft/Windows/INetCache/Low/IE/MR4FNPIS/angular-bootstrap[1].js",
+		"/C/Users/Ahmad/Code/Angular-ResetField/index-template.html",
+		"/C/Users/Ahmad/Documents/Coursera Classes/Game Theory/Problem Set 3_files/font-awesome.css",
+		"/C/Users/Ahmad/AppData/Local/Google/Chrome/User Data/Default/Extensions/bfbameneiokkgbdmiekhjnmfkcnldhhm/0.4.5_0/common/style-sheets/generated.css",
+		"/C/Users/Ahmad/Documents/Coursera Classes/Game Theory/Final Exam (Extra Credit)_files/font-awesome.css",
+		"/C/Users/Ahmad/.yeoman/cache/vwall/compass-twitter-bootstrap/v2.2.2.2/stylesheets/_compass_twitter_bootstrap_awesome.scss",
+		"/C/Users/Ahmad/.yeoman/cache/vwall/compass-twitter-bootstrap/v2.2.2.2/stylesheets/compass_twitter_bootstrap/_font-awesome.scss",
+		"/C/Users/Ahmad/Desktop/ng-conf notes",
+		"/C/Users/Ahmad/Desktop/Minute Menu - Copy.rdp",
+		"/C/Users/Ahmad/Code/blog/src/documents/blog/productivity-tip-delimiting-multiple-lines-with-your-ide.html.md",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/talks/models.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/talks/views.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/templates/talks/index.html",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/talks/urls.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/accounts/views.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/talks/forms.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/templates/accounts/profile.html",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/templates/base.html",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/templates/talks/talk_form.html",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/accounts/urls.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/codesmash/settings.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/talks/admin.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/codesmash/urls.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/codesmash/admin.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/contact/views.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/contact/urls.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/templates/contact/thanks.html",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/contact/forms.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/myapp/urls.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/myapp/views.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/templates/myapp/contact.html",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/myapp/forms.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/codesmash/views.py",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/src/templates/template.html",
+		"/C/Users/Ahmad/Code/django-tutorial/django-precompiler/myapp/contact.html",
+		"/C/Users/Ahmad/Code/blog/docpad.coffee",
+		"/C/Users/Ahmad/Code/Angular-ResetField/transclusion.html",
+		"/C/Users/Ahmad/AppData/Roaming/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/Ahmad/AppData/Roaming/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/C/Users/Ahmad/code/blog/node_modules/docpad-plugin-services/out/services.plugin.js",
+		"/C/Users/Ahmad/Code/blog/src/documents/index.html.eco",
+		"/C/Users/Ahmad/Code/blog/src/documents/pages/blog.html.eco",
+		"/C/Users/Ahmad/Code/blog/src/documents/pages/about.html.md",
+		"/C/Users/Ahmad/Code/blog/src/layouts/page.html.eco",
+		"/C/Users/Ahmad/Code/blog/src/layouts/posts.html.eco",
+		"/C/Users/Ahmad/Code/blog/src/documents/atom.xml.eco",
+		"/C/Users/Ahmad/Code/blog/src/layouts/default.html.eco",
+		"/C/Users/Ahmad/Code/Angular-ClearField/index.html",
+		"/C/Users/Ahmad/Code/blog/src/documents/styles/style.css.styl",
+		"/C/Users/Ahmad/Code/test/Gruntfile.js",
+		"/C/Users/Ahmad/Code/blog/node_modules/docpad-plugin-services/out/services.test.js",
+		"/C/Users/Ahmad/Code/blog/src/documents/regextra/index.html",
+		"/C/Users/Ahmad/Code/blog/src/layouts/post.html.eco",
+		"/C/Users/Ahmad/Code/blog/src/documents/scripts/foundation/app.js",
+		"/C/Users/Ahmad/Code/blog/src/documents/regextra/styles/app.css",
+		"/C/Users/Ahmad/Code/blog/src/documents/scripts/script.js.coffee",
+		"/C/Users/Ahmad/Downloads/ace-v1.2--bs-v3.0.0/index.html",
+		"/C/Users/Ahmad/Downloads/ace-v1.2--bs-v3.0.0/assets/js/uncompressed/ace-extra.js",
+		"/C/Users/Ahmad/Downloads/ace-v1.2--bs-v3.0.0/assets/js/uncompressed/ace.js",
+		"/C/Users/Ahmad/Downloads/ace-v1.2--bs-v3.0.0/assets/css/ace-fonts.css",
+		"/C/Users/Ahmad/Downloads/ace-v1.2--bs-v3.0.0/blank.html",
+		"/C/Users/Ahmad/Downloads/ace-v1.2--bs-v3.0.0/assets/js/ace.min.js",
+		"/C/Users/Ahmad/Code/blog/src/files/CNAME",
+		"/C/Users/Ahmad/Code/blog/src/documents/posts/returning-classes-that-inherit-listt-using-a-generic-method.html.md",
+		"/C/Users/Ahmad/Code/blog/src/documents/posts/sharpkit-evaluation.html.md",
+		"/C/Users/Ahmad/Code/blog/src/documents/posts/regex-engine-updated-to-allow-timeouts-in-net-4-5.html.md",
+		"/C/Users/Ahmad/Code/blog/src/documents/posts/productivity-tip-delimiting-multiple-lines-with-your-ide.html.md",
+		"/C/Users/Ahmad/Code/blog/src/documents/posts/null-coalescing-operator-precedence.html.md",
+		"/C/Users/Ahmad/Code/blog/src/documents/posts/writing-angularjs-controllers-coffeescript-classes.html.md",
+		"/C/Users/Ahmad/Code/blog/src/documents/posts/enumerating-weakly-typed-collections-with-implicitly-typed-variables.html.md",
+		"/C/Users/Ahmad/Code/blog/src/documents/posts/designating-different-audio-devices-for-playback-and-communication-on-windows-7.html.md",
+		"/C/Users/Ahmad/AppData/Roaming/Sublime Text 2/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/Ahmad/AppData/Roaming/Sublime Text 2/Packages/Default/Default (Windows).sublime-keymap",
+		"/C/Users/Ahmad/Code/blog/README.md",
+		"/C/Users/Ahmad/Code/blog/src/documents/blog/2011-09-21-regex-engine-updated-to-allow-timeouts-in-net-4-5.html.md",
+		"/C/Users/Ahmad/Dropbox/SoftwareNinjaneer/softwareninjaneer.com/webroot/index.html",
+		"/C/Users/Ahmad/Code/amageed.github.io/README.md",
+		"/C/Users/Ahmad/Code Projects/blog/src/documents/posts/2012-01-11-productivity-tip-delimiting-multiple-lines-with-your-ide.html.md",
+		"/C/Users/Ahmad/Code Projects/blog/.gitignore",
+		"/C/Users/Ahmad/.gitconfig",
+		"/C/Users/Ahmad/Code Projects/blog/src/2012-02-25-designating-different-audio-devices-for-playback-and-communication-on-windows-7.html.md",
+		"/C/Users/Ahmad/Code Projects/blog/src/documents/posts/2013-09-08-writing-angularjs-controllers-coffeescript-classes.html.md",
+		"/C/Users/Ahmad/Code Projects/blog/src/documents/posts/2013-06-24-sharpkit-evaluation.html.md",
+		"/C/Users/Ahmad/Code Projects/blog/src/documents/posts/2011-11-27-enumerating-weakly-typed-collections-with-implicitly-typed-variables.html.md",
+		"/C/Users/Ahmad/Code Projects/blog/src/documents/posts/2012-08-02-null-coalescing-operator-precedence.html.md",
+		"/C/Users/Ahmad/Code Projects/blog/src/documents/posts/2011-09-21-regex-engine-updated-to-allow-timeouts-in-net-4-5.html.md",
+		"/C/Users/Ahmad/Code Projects/blog/src/documents/posts/2012-03-05-returning-classes-that-inherit-listt-using-a-generic-method.html.md"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"C:\\Users\\Ahmad\\code\\blog,*.*",
+			"C:\\Users\\Ahmad\\Downloads\\ace-v1.2--bs-v3.0.0\\assets\\,*.*",
+			"C:\\Users\\Ahmad\\Downloads\\ace-v1.2--bs-v3.0.0\\assets\\css,*.*",
+			"C:\\Users\\Ahmad\\Code Projects\\blog\\src\\documents\\posts\\,*.*",
+			"C:\\Users\\Ahmad\\Code Projects\\blog\\src\\documents\\posts\\*.*",
+			"C:\\Users\\Ahmad\\Code Projects\\blog\\src\\documents\\posts\\*",
+			"C:\\Users\\Ahmad\\Code Projects\\SoftwareNinjaneer\\",
+			"C:\\Users\\Ahmad\\Code Projects\\SoftwareNinjaneer\\src",
+			"C:\\Users\\Ahmad\\Code Projects\\SoftwareNinjaneer\\",
+			"c:\\users\\ahmad\\code projects\\ng-boilerplate",
+			"C:\\Users\\Ahmad\\Documents\\TampabayTherapist\\,*.html",
+			"C:\\Users\\Ahmad\\Dropbox\\SoftwareNinjaneer\\softwareninjaneer.com\\webroot\\blog\\wp-content\\themes\\modernize\\",
+			"C:\\Users\\Ahmad\\Desktop\\SoftwareNinjaneer\\softwareninjaneer.com\\webroot\\blog",
+			"C:\\Users\\Ahmad\\Desktop\\SoftwareNinjaneer\\softwareninjaneer.com\\webroot\\blog\\wp-content\\themes\\modernize\\"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"ToPattern",
+			"PatternResult",
+			"h5",
+			"h4",
+			"ToPattern()",
+			"```",
+			"```cs",
+			"twelve columns",
+			"</pre>",
+			"<pre class=\"brush: csharp; gutter: false; toolbar: false;\">",
+			"tryit",
+			"data-magellan-destination",
+			"scrollspy",
+			"font",
+			"DEVELOPMENT10",
+			"validElement",
+			"'<input type=\"text\" ng-model=\"foo\" am-reset-field />'",
+			"validElement",
+			"'<input type=\"text\" ng-model=\"foo\" am-reset-field />'",
+			"ng-co",
+			"test",
+			"ng-click",
+			"click",
+			"trigger",
+			"reset-field",
+			"\n      ",
+			"link",
+			"el[",
+			"el.",
+			"moused",
+			"ngmodel",
+			"0.5",
+			"../fonts/",
+			"ctrl",
+			"v=4.0.3",
+			"?v=4.0.3",
+			"font/",
+			"awesome",
+			"compile",
+			"copy",
+			"img",
+			"db.",
+			"talks",
+			"user",
+			"propos",
+			"flatp",
+			"'",
+			"resetField",
+			":",
+			";",
+			"+",
+			"ctrl",
+			"Alt",
+			"shift",
+			"relateddocuments",
+			"favicon",
+			"site.email",
+			"    ",
+			"disq",
+			"    ",
+			"facebookLikeButton",
+			"    ",
+			"getblock(",
+			"validate",
+			"jquery",
+			"magell",
+			"scripts/",
+			"styles",
+			"img",
+			"enable_search_ahead",
+			"images",
+			"all",
+			"ctrl+s",
+			"post",
+			"![",
+			")]",
+			"])",
+			"[!",
+			"http://softwareninjaneer.com/blog/wp-content/uploads/2012/02",
+			"[code lang=\"javascript\"]",
+			"[/code]",
+			"[code lang=\"csharp\"]",
+			"text-center",
+			"<div class=\"text-center\">",
+			"http://softwareninjaneer.com/blog/wp-content/uploads/2012/03",
+			"[/code]",
+			"[code lang=\"csharp\"]",
+			"[code lang=\"csharp\" gutter=\"false\"]",
+			"[/code]",
+			"[code lang=\"csharp\"]",
+			"text-center",
+			"<div class=\"text-center\">",
+			"![",
+			"http://softwareninjaneer.com/blog/wp-content/uploads/2012/01",
+			"post",
+			"[/sql]",
+			"[sql]",
+			"url: posts",
+			").aspx",
+			"[/csharp]",
+			"[csharp]",
+			"url: posts/ ",
+			"slug:",
+			"\\)",
+			"\\(",
+			"v=",
+			"aspx",
+			"posts",
+			"outpath",
+			"mit",
+			"Ahmad Mageed on software engineering",
+			"index.html",
+			"index",
+			"index.html",
+			"'posts'",
+			".pull-left",
+			"pull-left",
+			"Ahmad Mageed",
+			"’",
+			"this is a page",
+			".eco",
+			"post",
+			"posts",
+			"company",
+			"your website",
+			"your webs",
+			"images",
+			"images/"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"ToRegex",
+			"PassphraseRegexResult",
+			"h4",
+			"h2",
+			"ToRegex()",
+			"</code></pre>",
+			"<pre><code class=\"lang-cs\">",
+			"col-sm-12",
+			"```",
+			"```cs",
+			"```cs\n```cs",
+			"<code>",
+			"id",
+			"validElement",
+			"validTemplate",
+			"am-reset-field",
+			"0.3",
+			"0.35",
+			"./fonts/",
+			"",
+			"\"",
+			"clearField",
+			"",
+			"  ",
+			"	",
+			"<p class=\"text-center\">![",
+			"!",
+			"/images/audio-setup",
+			"```javascript",
+			"```",
+			"```cs",
+			"<p class=\"text-center\">",
+			"/images",
+			"```",
+			"```cs",
+			"```",
+			"```cs",
+			"<p class=\"text-center\">",
+			"/images",
+			"```",
+			"```sql",
+			"url: /posts",
+			"```",
+			"```cs",
+			"url: posts/",
+			"%29",
+			"%28",
+			"'",
+			"```",
+			"```cs",
+			"",
+			"/",
+			"@",
+			"    ",
+			"Controller",
+			"$s",
+			"$scope",
+			"$s",
+			"<input type=\"text\" data-input-el><p></p>",
+			"<li><strong>Invalid:</strong>",
+			"<li><strong>Valid:</strong>",
+			"code>",
+			".valid",
+			"WithMinimumOccurrenceOf",
+			"MaxConsecutiveIdenticalCharacterOf",
+			"MaxConsecutiveIdenticalCharacter",
+			"IncludesAnyCharacters",
+			"WithMinimumOccurrence",
+			"*",
+			"-",
+			"",
+			"&copy; 2012",
+			"\"",
+			"<li><a href=\"services.html\">Services Offered</a></li>\n					<li><a href=\"adoption.html\">Adoption Training / Therapy</a></li>",
+			"<li><a href=\"services.html\">Services Offered</a></li><li><a href=\"adoption.html\">Adoption Training / Therapy</a></li>",
+			"contact_captcha",
+			"contact-form-captcha",
+			"cbnet_contact_captcha"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/Users/Ahmad/Code/blog/docpad.coffee",
+					"settings":
+					{
+						"buffer_size": 4677,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3108,
+								3108
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CoffeeScript/CoffeeScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1493.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "documents/regextra/index.html",
+					"settings":
+					{
+						"buffer_size": 19431,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7046,
+								7046
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2101.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "documents/blog/creating-an-angularjs-reset-field-directive.html.md",
+					"settings":
+					{
+						"buffer_size": 14493,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Markdown/Markdown.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "documents/blog/enumerating-weakly-typed-collections-with-implicitly-typed-variables.html.md",
+					"settings":
+					{
+						"buffer_size": 6509,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1008,
+								1003
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Markdown/Markdown.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 34.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"services.pl",
+				"/C/Users/Ahmad/code/blog/node_modules/docpad-plugin-services/out/services.plugin.js"
+			],
+			[
+				"services.plug",
+				"node_modules/docpad-plugin-services/out/services.plugin.js"
+			],
+			[
+				"services.plugin",
+				"/C/Users/Ahmad/code/blog/node_modules/docpad-plugin-services/out/services.plugin.js"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 246.0,
+	"status_bar_visible": true
+}
